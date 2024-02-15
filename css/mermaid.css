@@ -1,0 +1,62 @@
+.reveal .mermaid {
+	min-width: 35%;
+}
+  
+.reveal .mermaid svg {
+	min-width: 100%;
+	height: auto;
+}
+
+
+
+
+.reveal .mermaid svg .label foreignObject {
+	overflow: visible !important;
+}
+
+.reveal ul {
+	line-height: 1.4 !important;
+	margin: 0 0 1em 1em;
+}
+
+.reveal h1 {
+	font-size: 3.2em;
+}
+
+.reveal h2 {
+	font-size: 1.7em;
+}
+
+.reveal h3 {
+	font-size: 1.2em;
+}
+
+.reveal table {
+    margin: 1em;
+}
+
+.reveal .slides {
+    font-size: 0.8em;
+}
+
+.reveal .code-wrapper {
+    font-size: 0.7em;
+}
+
+.reveal .footnotes {
+	font-size: 0.7em;
+}
+
+.reveal .footnotes p {
+	line-height: 0;
+}
+
+.reveal p code {
+    border-radius: 5px;
+    color: #88adf5;
+}
+
+.reveal li code {
+    border-radius: 5px;
+    color: #88adf5;
+}

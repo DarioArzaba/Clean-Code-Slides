@@ -1,0 +1,3565 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <title></title>
+    <link rel="stylesheet" href="dist/reveal.css" />
+    <link rel="stylesheet" href="dist/theme/blood.css" id="theme" />
+    <link rel="stylesheet" href="css/vs2015.css" />
+	<link rel="stylesheet" href="css/layout.css" />
+	<link rel="stylesheet" href="plugin/customcontrols/style.css">
+
+
+    <link rel="stylesheet" href="css/mermaid.css" />
+
+    <script defer src="dist/fontawesome/all.min.js"></script>
+
+	<script type="text/javascript">
+		var forgetPop = true;
+		function onPopState(event) {
+			if(forgetPop){
+				forgetPop = false;
+			} else {
+				parent.postMessage(event.target.location.href, "app://obsidian.md");
+			}
+        }
+		window.onpopstate = onPopState;
+		window.onmessage = event => {
+			if(event.data == "reload"){
+				window.document.location.reload();
+			}
+			forgetPop = true;
+		}
+
+		function fitElements(){
+			const itemsToFit = document.getElementsByClassName('fitText');
+			for (const item in itemsToFit) {
+				if (Object.hasOwnProperty.call(itemsToFit, item)) {
+					var element = itemsToFit[item];
+					fitElement(element,1, 1000);
+					element.classList.remove('fitText');
+				}
+			}
+		}
+
+		function fitElement(element, start, end){
+
+			let size = (end + start) / 2;
+			element.style.fontSize = `${size}px`;
+
+			if(Math.abs(start - end) < 1){
+				while(element.scrollHeight > element.offsetHeight){
+					size--;
+					element.style.fontSize = `${size}px`;
+				}
+				return;
+			}
+
+			if(element.scrollHeight > element.offsetHeight){
+				fitElement(element, start, size);
+			} else {
+				fitElement(element, size, end);
+			}		
+		}
+
+
+		document.onreadystatechange = () => {
+			fitElements();
+			if (document.readyState === 'complete') {
+				if (window.location.href.indexOf("?export") != -1){
+					parent.postMessage(event.target.location.href, "app://obsidian.md");
+				}
+				if (window.location.href.indexOf("print-pdf") != -1){
+					let stateCheck = setInterval(() => {
+						clearInterval(stateCheck);
+						window.print();
+					}, 250);
+				}
+			}
+	};
+
+
+        </script>
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides"><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+# Clean Code
+
+By Robert C. Martin
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Programming
+
+> Writing requirements for a task that a machine can understand and execute.
+
+
+<div class="mermaid">
+
+graph
+    A[CODE] --> B[Rigorous]
+    A --> C[Accurate]
+    A --> D[Formal]
+
+</div>
+
+
+Clean code helps create this type of code.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Bad Code
+
+### Causes
+
+* Rushing
+* Getting tired 
+* Choosing functionality over maintainability.
+
+### Consequences
+
+* Progress and productivity slow down
+* Every modification destabilizes the system
+* Programmers avoid the code
+* Costly redesign needed at some point
+
+Clean code is not just cost effective, it is a matter of survival.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Code Rot
+
+### Prevention
+
+* Learn and defend the value of clean code practices
+* Don't accept bad schedules or bad requirement changes
+* Have a *code-sense*, see the mess and create alternatives
+* Keep the code clean to keep maintenance fast
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="" style="position: absolute; left: 5%; top: 19%; height: 10%; width: 90%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+## Clean Code
+</div>
+
+<div class="" style="position: absolute; left: 15%; top: 13%; height: 70%; width: 35%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+* Elegant. Efficient. Simple.
+* Expressive. Clear intent.
+* Direct. Decisive.
+* No duplication
+* Minimal dependencies
+* Minimal entities
+* Minimal API
+</div>
+
+<div class="" style="position: absolute; left: 50%; top: 13%; height: 70%; width: 35%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+* It does one thing well
+* Crisp Abstractions
+* Unit and Acceptance tests
+* Error handling
+* Pleasing to read and write
+* Attention to detail
+* Written with care
+</div>
+
+<div class="" style="position: absolute; left: 5%; top: 68%; height: 10%; width: 90%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+> Programmers are authors with readers. They should spend more time reading and understanding code that writing it.
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Maintain Code Clean
+
+> You should leave the code better than when you found it. 
+
+Start by using design principles like **SOLID**:
+
+| Single Responsibility Principle (SRP)            | Open Closed Principle (OCP)                                         | Liskov Substitution Principle (LSP)                                                                               | Interface Segregation Principle (ISP)                   | Dependency Inversion Principle (DIP)      |
+| ------------------------------------------------ | ------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- | ----------------------------------------- |
+| Every class should have only one responsibility. | Entities should be open for extension, but closed for modification. | Entities with references to base classes must be able to use instances of the derived classes without knowing it. | Users should not depend upon interfaces they don't use. | Depend upon abstractions not on concrete details. |
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+# Meaningful Names
+
+*The rules to create a good name*
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Important
+
+* Variables, functions, arguments, classes, packages, files, folders, etc. 
+* As programmers we create names for *everything*. 
+* Choose names with care and change them if you find better ones.
+* At the very least names should **reveal intent**:
+	* Why it exists
+	* What it does
+	* How it is being used
+
+<split even gap="1">
+
+```java
+// Bad names
+int d;
+int cellflag;
+int theCellList;
+```
+
+```java
+// Good names
+int elapsedTimeInDays;
+int flaggedCells;
+int gameBoard;
+```
+</split>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Bad Names
+
+Give false clues that obscure the meaning
+	
+ * Visually similar 
+* Include data type or structure
+* Include unnecessary prefix and suffix
+* Noise words (info, data, var, object, group, etc)
+* Slang, jokes or *clever* names with double meaning.
+
+<split even gap="1">
+
+```java
+//Bad Names
+int a1;
+int colorB;
+int colorC;
+int productInteger;
+int aChair17;
+int bChair18;
+int accountInfo;
+int theMessage;
+getAccountInfo()
+getAccounts()
+int sadVariable;
+```
+
+```java
+//Good Names
+int firstItem;
+int colorOfBanana;
+int colorOfCarrot;
+int product;
+int modernFurniture;
+int classicFurniture;
+int account;
+int message;
+getAccountDescription()
+getAllAccountName()
+int accountBalance;
+```
+</split>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Good Names P1
+
+* Visually unique (avoid encodings)
+* Prepare to forget them (avoid mental mapping)
+* You can pronounce them
+* Are searchable (at least long enough)
+* Prefixes could be replaced with an appropriate container
+
+<split even gap="1">
+
+```java
+//Good names
+String firstLetters;
+String recordId;
+Date generationTimeStamp;
+int MAX_NUMBER_ITEMS;
+```
+
+```java
+//Bad names
+String abcdf;
+String rToIdentif;
+Date genymdhms;
+int it132;
+```
+</split>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Good Names P2
+
+* Classes and objects should use **noun** names
+* Methods should have **verbs** that describe their activity
+* Solution Domain Names are ok (CS, algorithms, patterns, math)
+* Problem Domain Names are ok (application specific terms)
+* Use static factory names to describe the arguments of overloaded constructors.
+* Accessors, mutators and predicates should be named after their value 
+	* Also, they should use the prefixes *get*, *set* and *is* (JavaBean Standard)
+
+<split even gap="1">
+
+```java
+//Good names
+public class Bicycle {
+	public int breakForce = 0;
+	public void applyBreak() {
+		int breakForceIncrement = 1;
+		this.breakForce += breakForceIncrement;
+	}
+	public void setBreakForce(int breakForce) {
+		this.breakForce = breakForce;
+	}
+}
+Bicycle myBicycle = Bicycle.Size(130);
+```
+
+```java
+//Bad names
+public class moveOnBicycle {
+	public int b = 0;
+	public void break() {
+		int bInc = 1;
+		b = b + bInc;
+	}
+	public void bigChange(int newB) {
+		b = newB;
+	}
+}
+moveOnBicycle myBike = new moveOnBicycle(130);
+```
+</split>
+</div></script></section><section ><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Stay Consistent
+
+* Use surrounding code for context
+* Apply additional context to names only to differentiate them
+* Use **one word per concept**
+	* *Fetch*, *retrieve* and *get* should mean the same everywhere
+	* Note that the difference between *controller* and *manager* isn't obvious
+	* Avoid making others search the docs for the exact meaning of your terms
+</div></script></section><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+```java
+//Unclear context and inconsistent
+
+private void printCCount(char objectC, int c) {
+
+	String printNum;
+	String verbStringvalue;
+	
+	if (c == 0) {
+		printNum = "no";
+		verbStringvalue = "are";
+	} else if (c == 1) {
+		printNum = "1";
+		verbStringvalue = "is";
+	}
+	
+	String mStringvalue = String.format("There %s %s %s", verb, num, objectC,);
+	
+	print(mStringvalue);
+	
+}
+```
+
+```java
+//Clear context and consistent
+
+public class UserCountMessage {
+
+	private String number;
+	private String verb;
+	
+	public String make (char usersGroup, int count) {
+		createMessageParts(count);
+		return String.format("There %s %s %s", verb, number, usersGroup);
+	}
+	
+	private void createMessageParts(int count) {
+		if (count == 0) {
+			thereAreNoUsers();
+		} else if (count == 1) {
+			thereIsOneUser();
+		}
+	}
+	
+	private void thereIsOneUser() {
+		number = "1";
+		verb = "is";
+	}
+	
+	private void thereAreNoUsers() {
+		number = "no";
+		verb = "are";
+	}
+	
+}
+```
+</div></script></section></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+# Functions
+
+*The building blocks of programs*
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Small
+
+Functions should be as small as possible
+
+* Only do one thing. Around 20 lines max is reasonable
+* No complex abstractions, variables or nested logic
+* Used with the intent of reducing duplicated content
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Do One Thing
+
+They should do something or answer something but not both
+
+* Read them as a top-down narrative, close functions should be related
+* Ensure functions do one thing enforcing the TO paragraph<sup id="fnref:1" role="doc-noteref">1</sup>
+* Selection statements, specially switches do multiple things by nature<sup id="fnref:2" role="doc-noteref">2</sup>
+* We should extract functions until the name start to express their implementation
+	* This means that the function content has the same level of abstraction
+
+
+
+
+<div class="footnotes" role="doc-endnotes">
+<ol>
+<li id="fn:1" role="doc-endnote" class="footnote"><p>
+
+TO RenderPage (function name) we check if the page is a test, if so we include setups. In all cases we render them as HTML.
+
+</p></li><li id="fn:2" role="doc-endnote" class="footnote"><p>
+
+Functions that *must* use switches should be hidden with abstract factories that handle each case through polymorphism.
+
+</p></li></ol>
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Few Arguments
+
+They should have as few arguments as possible
+
+* There are very few cases where 4 or more arguments are needed
+* Monadic functions usually transform or say something about their argument
+	* Their argument can be an event signal that activates the function
+	* Don't use flags. A boolean flag signals the need to split the function
+* Reduce arguments by grouping them into an object and pass that instead
+* Multiple arguments are prone to ordering problems. What comes first?
+	* Explicitly tell the order of the arguments in the name of the function
+
+```java
+// Monodic asking (asking if file exists)
+boolean fileExists("MyFile")
+// Monodic transform (transforming String into InputStream)
+InputStream fileOpen("MyFile")
+// Monodic using argument as event signal
+void passwordAttemptFailedNTimes(int attempts)
+// Split functions that use flags
+render(boolean isSuit)
+renderForSuit()
+renderForSingleTest()
+// Reduce arguments with objects
+Circle makeCircle(double x, double y, double radius);
+Circle makeCircle(Point center, double radius);
+```
+</div></script></section><section ><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Circumstances
+
+Side effects happen when functions do something but under specific circumstances
+
+* They violate the **Do One Thing** rule, to mitigate them we can:
+	* Try to include the circumstance in the name
+	* Or temporarily uncouple the function from the required conditions
+	* Uncouple by creating another function that generates the conditions
+</div></script></section><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+```java
+public boolean checkPassword(String userName, String password) {
+	User user = UserGateway.findByName(userName);
+	if (user != User.NULL) {
+		String codedPhrase = user.getPhraseEncodedByPassword();
+		String phrase = decrypt(codedPhrase, password);
+		if ("Valid Password".equals(phrase)) {
+			Session.initialize();
+			return true;
+		}
+	}
+	return false;
+}
+```
+
+* Here `Session.initialize()` causes the method to have a side effect.
+* We should rename the method  to`checkPasswordAndInitializeSession()`.
+* Or create an `initializeSession()` method to be called separately
+</div></script></section></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Command-Query Separation
+
+* Split functions that both *command* (set attributes) and *query* (check if exists)
+
+```java
+// Sets value of attribute and returns true if successful
+public boolean set(String attribute, String value);
+
+// Leads to confusion when used in an if statement
+if (set("username", "bob")){...}
+
+// We could improve by renaming to "setAndCheckIfExists"
+// But the real solution is to split the function
+if (attributeExists("username")) {
+	setAttribute("username", "bob");
+}
+```
+</div></script></section><section ><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Error Codes
+
+* Functions that return error codes violate command-query separation
+* Error codes require an entity to be imported all over the code base (dependency)
+* Command functions should return exceptions instead of error codes
+* Exceptions are part of the exception class, they don't require redeployment
+</div></script></section><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+```java
+// Command function returns error code
+if (deletePage(page) == E_OK)
+// The caller must lead with the error immediately
+if (deletePage(page) == E_OK) {
+	if (registry.deleteReference(page.name) == E_OK){
+		if (configKeys.deleteKey(page.name.makeKey()) == E_OK){
+			logger.log("page deleted")
+		} else {
+			logger.log("configKey not deleted")
+		}
+	} else {
+		logger.log("delete failed")
+		return E_ERROR;
+	}
+}
+```
+
+```java
+// Returning an exception handled by a try-catch is better
+try {
+	deletePage(page);
+	registry.deleteReference(page.name);
+	configKeys.deleteKey(page.name.makeKey());
+} catch (Exception e) {
+	logger.log(e.getMessage());
+}
+```
+</div></script></section></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Try and Catch
+
+* *Try and Catch* blocks are better than error codes but still undesirable
+	* *Try and Catch* blocks mix error processing with normal processing
+	* Extract the body of *Try and Catch* blocks into their own entities
+
+```java
+// We separate the try-catch from the normal processing
+public void delete(Page page) {
+	try {
+		deletePageAndAllReferences(page);
+	}
+	catch (Exception e) {
+		logError(e);
+	}
+}
+
+private void deletePageAndAllReferences(Page page) throws Exception {
+	deletePage(page);
+	registry.deleteReference(page.name);
+	configKeys.deleteKey(page.name.makeKey());
+}
+
+private void logError(Exception e) {
+	logger.log(e.getMessage());
+}
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Input and Output
+
+* Functions should take only inputs as arguments
+* Don't use output arguments as they make you double check the signature
+* If a function **must** change a state have it change the object instead
+* In Structured Programming every function has one entry and one exit
+	* One `return` without `break`, `continue` or `goto` statements
+	* Clean code advocates for minimal over structured programming
+	* Still, `goto` should be avoided if possible.
+
+```java
+// Does it append "s" to a footer or a footer to "s"??
+appenFooter(s);
+
+// Confusion originates in the output argument
+public void appendFooter(StringBuffer report)
+
+// Use an object instead for clarity
+report.appendFooter();
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+>   Systems, much like stories, demand functions that are brief, well-named, and thoughtfully organized to effectively narrate the system's story.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+# Comments
+
+*A necessary evil*
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Comments Lie
+
+* Always try to create self-documenting code
+* Sometimes they are necessary but most of the time they are frivolous
+* They can propagate lies and misinformation
+
+```java
+// Check to see if the employee is eligible for full benefits
+if ((employee.flags & HOURLY_FLAG) && (employee.age > 65))
+
+//Instead of the previous comment try to create expressive code
+if (employee.isEligibleForFullBenefits())
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## High Maintenance
+
+* Their negative nature originates in their maintenance cost
+* Every comment must be in a high state of repair, relevance and accuracy.
+* In many cases a comment can be replaced with a descriptive function.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Necessary P1
+
+* Short legal headers from corporate standards
+* Explanation of intent behind a rare coding decision
+* To amplify the importance of code that may seem inconsequential
+* Warning about unexpected consequences of changing code
+	* Dangerous code could use the `ignore` attribute (JUnit4) instead
+
+```java
+// Copyright (C) 2003,2004,2005 by Object Mentor, Inc. All rights reserved.
+// Released under the terms of the GNU General Public License version 2 or later
+
+// This is our best attempt to get a race condition by creating large number of threads.
+
+// This (trim) is important, unremoved spaces could cause saving to unintended lists.
+
+// Takes to much time to run
+@Ignore("Takes too long to run")
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Necessary P2
+
+* TODO if they clearly explain the problem and how it will be fixed
+* Still, TODO is bad practice since it signals *incomplete* code
+* Clarify 3rd party code, use with caution from unexpected changes
+* Javadocs and Public API's. They can still be misleading, nonlocal and dishonest
+	* As a general rule if the code is **internal** javadocs simply act as clutter
+
+```java
+//TODO-MdM these are not needed. We will resolve when we do the checkout model
+
+assertTrue(ab.compareTo(ab) == 0); // ab == ab
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Bad Comments P1
+
+* Long redundant comments that disincentivize looking at the code
+* Misleading comments with facts that are slightly untrue
+* Mandated comments such as javadocs on every function
+* Noise comments that restate the obvious, they are clutter
+* Mumbling or commenting without thought
+* Journal comments that simply state a history of changes
+* Comments that needs a review of the code to be understood
+
+```java
+// The next code compares a to b, if they are equal adds 1 to a. (Redundant)
+// If they are not equal they will add 2 to b (Misleading)
+/**
+* The initial value for a (Mandated)
+*/
+protected int a = 0;
+if (a == b) {
+	a += 1 // Adding 1 to a (Noise)
+} else {
+	// No changes in b mean that a will later be reduced (Mumbling)
+}
+// 11-09 Removed changing the value of b (Journal)
+// From last code we expect a to have a value of 1 (Review Code)
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Bad Comments P2
+
+* Attributions, use your source control system instead
+* HTML Comments with tags that add further clutter
+* Nonlocal comments about code elsewhere or in far away modules
+* Position markers to state start and end of a block of code
+* Unnecessary historical data, general lessons or discussions
+* Simply confusing comments that seem to need their own comments
+* Commenting out code
+	* Useful tool on the short term but in practice is too easily forgotten
+	* Commented code seen by others remains untouched
+	* Use source control instead to try changes instead
+
+```java
+/* Added by Rick (Attributions) */ 
+/**
+* A selector <p></p> <pre> Usage: &lt; a + 1 &lt; <p></p> </pre> (HTML Comments)
+*/
+// The default value for b will be assigned by module C as 123 (Nonlocal)
+protected int a = 0;
+// ----- Start of Selector ----- (Markers)
+if (a == b) {
+	a += 1 // a should always be 1 (Confusing)
+} else {
+	// b +=2 (Commented out code)
+}
+// This was an incredible achievement using selectors invented in 1987 (Historical)
+// Bob I want to see you create something like this (Discussions)
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+# Formatting
+
+*Coding conventions*
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Importance
+
+Maintain code
+
+* Neat
+* Consistent
+* Ordered
+* Detailed
+* Professional
+
+> Use a simple set of rules consistently by all team members and managed by an automated tool
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Vertical Rules P1
+
+* Files size should be around 70 lines (40-150). Extremes are 6 to 300 lines
+* File name should be profound, it is the title of the document
+* Top parts of the file are the most important and the ones you look at first
+* Groups of lines represent a concepts, each thought separated by a blank line
+* Tightly related code should appear dense (vertical openness and density)
+* Don't use protected variables, they create vertical distance between files
+
+> Think about making files easy to visually scan
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Vertical Rules P2
+
+* Local variables should appear at the top of each function
+* Only in rare cases big loops need variables on top of them
+* Instance variables on top of their class, use them in most or all methods
+* Calling a function should happen above the function implementation
+* The function called should be as close as possible to the caller
+* Functions that do similar operations should be grouped together 
+
+> Good placement and grouping create conceptual affinity
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Horizontal Rules P1
+
+* Lines around 45 chars (20-60). Extremes are 10 to 80 characters.
+* Hollerith limit of 80 is ok but depending on names it could reach a max of 120
+* If you set your screen limit to 120 you should never have to scroll to the right
+* Assignment operators should have spaces to accentuate their operands
+* Don't put spaces between parenthesis, put them between arguments
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Horizontal Rules P2
+
+* Don't align declarations, a long declaration list suggest the class is doing to much
+* Indentation should be used to discern structures, declarations and methods
+* One liners are tempting but generally you will just end up adding indentation
+* Dummy scopes for loop structures should be avoided, at least indent them
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+```java
+public class CodeAnalyzer implements JavaFileAnalysis {
+	private int lineCount;
+	private int maxLineWidth;
+	private int widestLineNumber;
+	private LineWidthHistogram lineWidthHistogram;
+	private int totalChars;
+	
+	public CodeAnalyzer() {
+		lineWidthHistogram = new LineWidthHistogram();
+	}
+	
+	public static List<File> findJavaFiles(File parentDirectory) {
+		List<File> files = new ArrayList<File>();
+		findJavaFiles(parentDirectory, files);
+		return files;
+	}
+	
+	private static void findJavaFiles(File parentDirectory, List<File> files) {
+		for (File file : parentDirectory.listFiles()) {
+			if (file.getName().endsWith(".java"))
+				files.add(file);
+			else if (file.isDirectory())
+				findJavaFiles(file, files);
+		}
+	}
+	
+	public void analyzeFile(File javaFile) throws Exception {
+		BufferedReader br = new BufferedReader(new FileReader(javaFile));
+		String line;
+		while ((line = br.readLine()) != null)
+			measureLine(line);
+	}
+	
+	private void recordWidestLine(int lineSize) {
+		if (lineSize > maxLineWidth) {
+			maxLineWidth = lineSize;
+			widestLineNumber = lineCount;
+		}
+	}
+
+	public int getMedianLineWidth() {
+		Integer[] sortedWidths = getSortedWidths();
+		int cumulativeLineCount = 0;
+		for (int width : sortedWidths) {
+			cumulativeLineCount += lineCountForWidth(width);
+			if (cumulativeLineCount > lineCount/2)
+				return width;
+		}
+		throw new Error("Cannot get here");
+	}
+}
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+> Formatting rules need a team session. Everybody on the team should agree about braces, spacing, indenting, naming and other conventions.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+# Objects and data structures
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Data Abstraction
+
+You need to determine what code is private and what code is public
+
+* Hiding implementation is **NOT** simply creating accessor functions
+* Hiding means exposing interfaces to manipulate data without knowing the details
+* Creating getters and setters for your private variables defeats their purpose
+
+| Objects                                                                              | Data Structures |
+| ------------------------------------------------------------------------------------ | --------------- |
+| Functions to transform and modify the state of the object without access to its data | Functions to get the data back without any modification to the state of the object                |
+</div></script></section><section ><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Procedural vs Object Oriented
+
+| Procedural Code                                                             | Object Oriented Code                                                                   |
+| --------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| Uses Data Structures                                                        | Uses Objects                                                                           |
+| Easy to add functionality without changing existing structures              | Easy to add new classes or data structures without changing existing functionality     |
+| Hard to add new data since all functions must accommodate the new structure | Hard to add new functionality since all classes must be modified to interact properlly |
+| For adding functionality using the same data types                          | For adding data types using the same functionality                                     |
+| Ideally private variables with no functions                                 | Ideally private variables with public functions                                                                                       |
+
+> Not everything needs to be an object, sometimes you just need a simple data structure to add functionality.
+</div></script></section><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Procedural
+
+Adding functionality such as `perimeter()` to `Geometry` keeps the *shapes* (structures) unaffected
+
+However adding a *shape* needs a modification to the functionality of `Geometry`
+
+```java
+public class Square {
+	public Point topLeft;
+	public double side;
+}
+
+public class Rectangle {
+	public Point topLeft;
+	public double height;
+	public double width;
+}
+
+public class Circle {
+	public Point center;
+	public double radius;
+}
+
+public class Geometry {
+	public final double PI = 3.141592653589793;
+	
+	public double area(Object shape) throws NoSuchShapeException {
+		if (shape instanceof Square) {
+			Square s = (Square)shape;
+			return s.side * s.side;
+		} else if (shape instanceof Rectangle) {
+			Rectangle r = (Rectangle)shape;
+			return r.height * r.width;
+		} else if (shape instanceof Circle) {
+			Circle c = (Circle)shape;
+			return PI * c.radius * c.radius;
+		} 
+		throw new NoSuchShapeException();
+	}
+}
+```
+</div></script></section><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Object Oriented
+
+The `area()` method is polymorphic, `Geometry` is no longer needed.
+
+Here adding a *Shape* keeps the other functions unaffected.
+
+However adding a new function needs a modification to every *Shape*.
+
+```java
+public class Square implements Shape {
+	private Point topLeft;
+	private double side;
+	public double area() {
+		return side*side;
+	}
+}
+public class Rectangle implements Shape {
+	private Point topLeft;
+	private double height;
+	private double width;
+	public double area() {
+		return height * width;
+	}
+}
+public class Circle implements Shape {
+	private Point center;
+	private double radius;
+	public final double PI = 3.141592653589793;
+	public double area() {
+		return PI * radius * radius;
+	}
+}
+```
+</div></script></section></section><section ><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Law of Demeter
+
+> A module shouldn't know about the data inside of the objects it manipulares
+
+In other words, a method `f` of class `C` should only call methods from 
+
+* `C`
+* Objects created by `f`
+* Objects used as arguments for `f`
+* Instance variable objects of `C`
+
+This means that methods *should not* operate on objects returned by other methods (train wrecks)
+
+```java
+// Train Wreck
+final String outputDir = ctxt.getOptions().getScratchDir().getAbsolutePath();
+
+// Format train wrecks by dividing into their respective objects
+// and then saving them on a new instance
+Options opts = ctxt.getOptions();
+File scratchDir = opts.getScratchDir();
+final String outputDir = scratchDir.getAbsolutePath();
+```
+</div></script></section><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+* If `ctxt`, `Options` and `ScratchDir` are objects then they are still violating Demeter since they are exposing their inner structure through accessors instead of using data structures.
+* If they are data structures then they are being used correctly but the use of accessor functions to get their data is confusing, a better way would have been:
+
+```java
+final String outputDir = ctxt.options.scratchDir.absolutePath;
+```
+
+Frameworks like *beans* demand accessors and mutators for data structures, blurring the line even more.
+</div></script></section></section><section ><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Hybrid Objects
+
+* The worst offense is creating objects with functions and public data structures.
+* This **hybrid objects** make it hard to add new functionality AND structures.
+
+> Note that we generally retrieve data from an object to perform an operation later on, instead try to combine the data with the operation into an exposed function.
+</div></script></section><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+In the previous example `ctxt` was *actually* an object (violating Demeter) and we wanted to retrieve the absolute path of its scratch directory as part of the creation of a Buffered Output Stream later on:
+
+```java
+// Get object data
+Options opts = ctxt.getOptions();
+File scratchDir = opts.getScratchDir();
+final String outputDir = scratchDir.getAbsolutePath();
+
+// Perform operation
+String outFile = outputDir + "/" + className.replace('.', '/') + ".class";
+FileOutputStream fout = new FileOutputStream(outFile);
+BufferedOutputStream bos = new BufferedOutputStream(fout);
+```
+
+To prevent the hybrid object we should instead expose a function combining the internal data with the intended operation:
+
+```java
+BufferedOutputStream bos = ctxt.createScratchFileStream(classFileName);
+```
+</div></script></section></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Data Transfer Objects
+
+### DTO's
+
+* As previously mentioned the ideal data structure contains no functions and public variables
+* This is known as a Data Transfer Object, pretty useful for starting database communications
+* They act as the first step in a series of transformations from raw data into useful objects
+
+### Beans
+
+* Beans are a popular alternative to DTO's with private variables, getters and setters
+* At first they seem to provide lower exposure but in reality they offer no real benefit
+
+### Active Records
+
+* Special forms of DTO's with public or bean variables and navigational methods
+* Using methods such as `save` and `find` they act as direct table translations
+
+> Both can be clean code structures, unfortunately they are commonly converted into hybrids by putting business rule methods inside of them.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+# Error Handling
+
+*Code should work even when things go wrong*
+</div></script></section><section ><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## General Advice
+
+* Error handling is important, we want to define what the system will do in every case
+* However error handling **obscures logic** when implemented incorrectly
+* You shouldn't mix the algorithm with the error handling logic
+</div></script></section><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Try-Catch
+
+*  The `try` statement  creates an additional scope inside `catch`
+* Because of this `catch` **must** leave the program in a consistent state.
+* Test Driven Development (TDD) tests exceptions first and then builds the logic.
+
+```java
+// Unit test. We expect an exception if the file doesn't exist.
+@Test(expected = StorageException.class)
+public void retrieveSectionShouldThrowOnInvalidFileName() {
+	sectionStore.retrieveSection("invalid - file");
+}
+
+// We try to generate the exception
+public List<RecordedGrip> retrieveSection(String sectionName) {
+	try {
+		FileInputStream stream = new FileInputStream(sectionName)
+	} catch (Exception e) {
+		throw new StorageException("retrieval error", e);
+	}
+	return new ArrayList<RecordedGrip>();
+}
+
+// Test passes. Refactor to narrow exception type to match the type thrown by constructor
+public List<RecordedGrip> retrieveSection(String sectionName) {
+	try {
+		FileInputStream stream = new FileInputStream(sectionName);
+		// Use TDD to build rest of the logic here
+		stream.close();
+	} catch (FileNotFoundException e) {
+		throw new StorageException("retrieval error", e);
+	}
+	return new ArrayList<RecordedGrip>();
+}
+```
+</div></script></section></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Checked Exceptions
+
+* Checked exceptions seemed a good idea at first, in practice they are not needed.
+* They violate the OCP, any change to the method forces a change at higher signatures
+* They break encapsulation since high levels need to know how to handle the exception
+
+> Their only advantage is in critical systems and exceptionally error prone solutions.
+</div></script></section><section ><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Error Message
+
+Every exception should provide enough to determine the source of the error
+
+* In Java the stack trace helps with locating the error, however the intent remains unclear
+* Error messages clarify what the system was trying to do when it failed
+* Mention what failed (component) and the failure type (device, network, programming, etc.)
+* In general you should wrap errors in error handling classes, including third party errors
+
+```java
+// Bad exception handling for a Third Party API
+ACMEPort port = new ACMEPort(12);
+try {
+	port.open();
+} catch (DeviceResponseException e) {
+	reportPortError(e);
+	logger.log("Device response exception", e);
+} catch (ATM1212UnlockedException e) {
+	reportPortError(e);
+	logger.log("Unlock exception", e);
+} catch (GMXError e) {
+	reportPortError(e);
+	logger.log("Device response exception");
+}
+
+// Wrapping the API directly into handling class (LocalPort)
+// Note that we define the exception ourselves
+LocalPort port = new LocalPort(12);
+try {
+	port.open();
+} catch (PortDeviceFailure e) {
+	reportError(e);
+	logger.log(e.getMessage(), e);
+}
+
+public class LocalPort {
+	private ACMEPort innerPort;
+	public LocalPort(int portNumber) {
+		innerPort = new ACMEPort(portNumber);
+	}
+	public void open() {
+		try {
+			innerPort.open();
+		} catch (DeviceResponseException e) {
+			throw new PortDeviceFailure(e);
+		} catch (ATM1212UnlockedException e) {
+			throw new PortDeviceFailure(e);
+		} catch (GMXError e) {
+			throw new PortDeviceFailure(e);
+		}
+	}
+}
+```
+
+> Use multiple error handling classes when you need to catch one exception but allow another to pass through.
+</div></script></section><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Special Case Pattern
+
+* There are times when we don't want to abort the computation
+* In this cases instead of wrapping we create a *Special Object*
+
+```java
+// Search for an item and get its value. Add to total.
+// If search throws exception add default value.
+try {
+	ItemValue value = Items.getItemValue(inventory.getID())
+	total += value.getValue()
+} catch(ItemValueNotFound e) {
+	total += defaultValue()
+}
+
+// Change Items so it returns DefaultItemValue special object
+public class Items {
+	public ItemValue getItemValue(int ID) {
+		try {
+			ItemValue value = new ItemValue(ID)
+			return value;
+		} catch(ItemValueNotFound e) {
+			DefaultItemValue defaultValue = new DefaultItemValue()
+			return defaultValue;
+		}
+	}
+}
+
+public class DefaultItemValue implements Items {
+	public int getValue() {
+		return DEFAULT_VALUE;
+	}
+}
+
+//Client Code
+ItemValue value = Items.getItemValue(inventory.getID())
+total += value.getValue()
+```
+
+> Creating or configuring objects to handle special cases instead of the client code.
+</div></script></section></section><section ><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Null Check
+
+* Don't use null checks or return null from calls
+* We are creating the conditions for `NullPointerException`
+* There is always the possibility that a null check generates an unexpected NULL value
+* Try to throw an exception or create a special case object instead
+	* Even if a 3rd party API is returning null try to wrap the null into an object
+	* Then use the object to throw the exception or create the special object
+</div></script></section><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+```java
+// Here we have a null check on getEmployees
+List<Employee> employees = getEmployees();
+if (employees != null) {
+	for(Employee e : employees) {
+		totalPay += e.getPay();
+	}
+}
+
+// Using an special object (emptyList) to remedy the null check
+// Now instead of NULL we expect getEmployees() to return an empty list
+public List<Employee> getEmployees() {
+	if( employeesEmpty() ) {
+		return Collections.emptyList();
+	}
+}
+
+List<Employee> employees = getEmployees();
+for(Employee e : employees) {
+	totalPay += e.getPay();
+}
+```
+
+> Even worse than returning a null is passing a null to a function. Unless explicitly requested you should never pass a null value.
+</div></script></section></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+# Boundaries
+
+*How to handle third party code*
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Tension
+
+* There is a tension between providers and consumers of a package.
+* Providers want their API to be as general as possible
+* Consumers want the package to cater to their specific needs
+
+```java
+// Supose we want to use the MAP package
+Map sensors = new HashMap();
+Sensor s = (Sensor)sensors.get(sensorId);
+
+// Readability increases with the use of generics
+Map<Sensor> sensors = new HashMap<Sensor>();
+Sensor s = sensors.get(sensorId);
+
+// The cleaner way to use MAP would be
+public class Sensors {
+	private Map sensors = new HashMap();
+	public Sensor getById(String id) {
+		return (Sensor)sensors.get(id);
+	}
+}
+Sensor s = sensors.getById(sensorId);
+// This hides the interface at the MAP boundary
+// Casting and type management of the generic is handled inside the class
+```
+
+The takeaway is not that you should encapsulate every use of `MAP`, instead you should avoid freely passing any interface at a boundary around the system. Returning it or accepting it as an arguments forces a refactor if the interface ever changes.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Testing
+
+> A great way of learning how third party works is by creating tests around the expectations we have of them. Tests also ensure that the package still works in the future even after updates.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## No Implementation
+
+Suppose your system needs to use an interface that hasn't been implemented
+
+* One solution is to create your own custom interface tailored to your needs
+* Create a testing entity to check that the interface does what you expect
+* Finally when the real API is implemented create an adapter to bridge the differences
+* Your code should be able to interface with unknown code through clean boundaries
+
+> You don't have to use an interface directly if you don't want to.
+
+
+<div class="mermaid">
+<!-- .element: style="min-width: 60%" -->
+graph LR
+    A(App) --> B[Custom Interface]
+	C{{Testing Entity}} --> B
+    B --> D[Adapter]
+    D --> E(Real Interface)
+
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+# Unit Tests
+
+*Preventing unexpected behavior*
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## TDD
+
+Agile and Test Driven Development is now the standard.
+
+1. No production code until failing unit test are written
+2. No more test than sufficient to fail, not compiling is failure too
+3. No more production code than sufficient to pass the test
+
+> This TDD cycle ensures that production and testing code are created on parallel.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Bad Tests
+
+* Test code can be as unclean as production code, therefore it should be as important
+* Tests need to be clean since they will change for every change in production
+* Tests are the safeguard that prevents every change transforming into a bug
+* Unit tests are NOT a liability, when things break we will know exactly where they broke
+
+> Tests are the foundation of flexible, maintainable and usable code.
+</div></script></section><section ><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Readability
+
+The most important thing about test is that they are **readable**
+
+* Readability relates to tests that are clean, simple and with good density
+* They need to be succinct and expressive, efficiency is not that important
+* One `assert` per test is good, even better is one test per concept:
+	* Each test should test just one idea or action
+	* General or miscellaneous tests are bad since they lack purpose
+
+### Good Patterns
+
+* Given When Then naming convention (better readability)
+* Template Method Pattern (avoid duplication)
+* Build Operate Check pattern (better density)
+	* First part builds up the test data
+	* Second part operates on the test data
+	* Third part checks that the operation yields expected results
+</div></script></section><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Examples
+
+```java
+// Original Test
+public void testGetPageHieratchyAsXml() throws Exception {
+	crawler.addPage(root, PathParser.parse("PageOne"));
+	crawler.addPage(root, PathParser.parse("PageOne.ChildOne"));
+	crawler.addPage(root, PathParser.parse("PageTwo"));
+
+	request.setResource("root");
+	request.addInput("type", "pages");
+	Responder responder = new SerializedPageResponder();
+	SimpleResponse response =
+	(SimpleResponse) responder.makeResponse(new FitNesseContext(root), request);
+	String xml = response.getContent();
+	
+	assertEquals("text/xml", response.getContentType());
+	assertSubString("<name>PageOne</name>", xml);
+	assertSubString("<name>PageTwo</name>", xml);
+	assertSubString("<name>ChildOne</name>", xml);
+}
+
+
+// Build Operate Check pattern
+public void testGetPageHierarchyAsXml() throws Exception {
+	makePages("PageOne", "PageOne.ChildOne", "PageTwo");
+	
+	submitRequest("root", "type:pages");
+	
+	assertResponseIsXML();
+	assertResponseContains(
+		"<name>PageOne</name>", "<name>PageTwo</name>", "<name>ChildOne</name>"
+	);
+}
+
+// Given When Then naming convention
+public void testGetPageHierarchyAsXml() throws Exception {
+	givenPages("PageOne", "PageOne.ChildOne", "PageTwo");
+
+	whenRequestIsIssued("root", "type:pages");
+	
+	thenResponseShouldBeXML();
+}
+
+// Template Method pattern
+public abstract class baseTestGetPageHierarchyAsXml() {
+	public void loadTestData() {
+		givenPages("PageOne", "PageOne.ChildOne", "PageTwo");
+		whenRequestIsIssued("root", "type:pages");
+	}
+}
+
+public void testGetPageHierarchyAsXml() extends baseTestGetPageHierarchyAsXml throws Exception {
+	loadTestData();
+	thenResponseShouldBeXML();
+}
+```
+
+> Choose a pattern that balances readability AND duplication
+</div></script></section></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## FAST
+
+Good test follow this five general rules
+
+1. **FAST**: Tests should be as fast as it is reasonable to run them (run continuously)
+2. **INDEPENDENT**: Tests should not depend on other tests (failure cascade)
+3. **REPEATABLE**: Tests should be able to run regardless of environment (reliable)
+4. **SELF VALIDATING**: They should have a boolean output *fail-pass* (objective)
+5. **TIMELY**: They should be written just before production code (relevant)
+
+> The last point avoids production code that is hard or impossible to test.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+# Classes
+
+*THE abstraction entity*
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Order
+
+A class, by the Java Convention, has the following structure
+
+ * Public Static Constants
+* Private Static Variables
+* Private Instance Variables
+* Avoid public variables
+* Public Functions
+* Private Utility Variables
+* Private Utility Functions
+
+> Utility entities should be private and used by public functions, however there are exceptions such as tests wanting access to those utilities.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Small
+
+Classes should be small, their size measured by their responsibilities
+
+* Their name reflects their responsibilities
+* If we have a hard time finding a concrete name it suggest too many responsibilities
+* They should follow the Single Responsibility Principle, only one reason to change
+* Having one responsibility is what makes them reusable in other codebases
+
+> Try to describe what the class does without using the words if, or, but, and. If you need to use them it suggest the class has to many responsibilities.
+
+```java
+// This is a small, concrete, single purpose and reusable class
+public class Version {
+	public int getMajorVersionNumber()
+	public int getMinorVersionNumber()
+	public int getBuildNumber()
+}
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Multiple
+
+As you break functions expect a proliferation of small classes
+
+1. You intend to break a function by extracting its content into a smaller one
+2. This may duplicate the function variables that both functions require
+3. You decide to promote the variables to instance variables to be used by both
+4. However this creates instance variables that the class itself don't require
+5. The solution is to create a new class dedicated to the extracted function
+
+> They should have a small number of instance variables. They are the main way that tie the class with its functions, therefore they should be codependent.
+</div></script></section><section ><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Flexible
+
+Use classes to organize code around the expectation of change
+
+* Multiple small classes allow for easy extension of their parent
+* They are more suited for testing, support SRP and OCP
+* In the **ideal** case every new functionality requires an extension not a modification
+	* We minimize coupling and support DIP
+
+> Multiple classes may seem to add complexity but in reality we are just making the complexity that is already there more organized and searchable.
+</div></script></section><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+* Suppose we build a `Portfolio` class that depends upon a 3rd party `TokyoStock` API
+* Our tests will be volatile from the changing values and implementation of the API
+* We solve this with a `StockExchange` interface to be implemented by `TokioStock`
+* `StockExchange` will be used as an argument for the `Portfolio` constructor
+* Finally we can test the `StockExchange` implementation by emulating `TokyoStock`
+
+```java
+public interface StockExchange {
+	Money currentPrice(String symbol);
+}
+
+public Portfolio {
+	private StockExchange exchange;
+	public Portfolio(StockExchange exchange) {
+		this.exchange = exchange;
+	}
+}
+
+public class PortfolioTest {
+	private FixedStockExchangeStub exchange;
+	private Portfolio portfolio;
+	
+	@Before
+	protected void setUp() throws Exception {
+		exchange = new FixedStockExchangeStub();
+		exchange.fix("MSFT", 100);
+		portfolio = new Portfolio(exchange);
+	}
+	
+	@Test
+	public void GivenFiveMSFTTotalShouldBe500() throws Exception {
+		portfolio.add(5, "MSFT");
+		Assert.assertEquals(500, portfolio.value());
+	}
+}
+
+```
+
+> We have decoupled TokyoStock from our class. Note that the interface should work with any API where we expect to get a stock value.
+</div></script></section></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+# Systems
+
+*Complexity makes planning, building and testing difficult*
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Abstraction
+
+Abstraction and **separation of concerns** minimize complexity
+
+* Some parts are dedicated to the big picture while smaller parts work the details
+* Divide systems into startup (construction and dependencies) and runtime logic
+* Lazy-initialization isn't a serious problem, but it is cleaner to use a global startup
+* Object construction and wiring are important. Are they serving a purpose?
+
+> Our first instinct may be to move construction to the main class and then design the rest of the system assuming all objects have been constructed.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Factories
+
+* Used to control when the application is responsible for object creation
+* The Abstract Factory Pattern separates construction details from *when* to do them
+* Startup is <span>red</span> <!-- .element: style="color: FireBrick" -->. 
+Runtime is <span>blue</span> <!-- .element: style="color: CornflowerBlue" -->.
+
+**Main**
+
+
+<div class="mermaid">
+<!-- .element: style="min-width: 50%" -->
+graph LR
+    A[main] --> |3 run co|B[application]
+	A --> |1 build|C[Builder]
+	C --> |2 construct|D[Configured Obj]
+	B --> D
+	style A fill:DarkRed
+	style C fill:DarkRed
+	style D fill:DarkBlue
+	style B fill:DarkBlue
+
+</div>
+
+
+**Factory**
+
+In this example the system is tasked with creating `items`.
+
+
+<div class="mermaid">
+<!-- .element: style="min-width: 50%" -->
+graph LR
+    A[main] --> |run factory|B[System]
+	A --> |create|C[Item Factory]
+	C --> D[Factory Interface]
+	B --> D
+	B -.-> E[Item]
+	C --> E
+	style A fill:DarkRed
+	style C fill:DarkRed
+	style D fill:DarkBlue
+	style B fill:DarkBlue
+	style E fill:DarkBlue
+
+</div>
+</div></script></section><section ><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Dependency Injection
+
+Apply *Inversion of Control* to Dependency Management
+
+* In essence it moves secondary responsibilities from an object to a secondary object
+* An object shouldn't instantiate dependencies itself, it should pass that to another mechanism
+* Because construction is a global concern the mechanism is usually main or a special container
+* JNDI lookups are a partial DI where objects ask a directory server for a service
+	* The object controls what the service returns but is responsible for resolving the dependency.
+
+```java
+// Java Naming and Directory Interface example
+MyService myService = (MyService)(jndiContext.lookup(“NameOfMyService”));
+```
+</div></script></section><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Pure DI
+
+* Don't resolve dependencies, just provide setters or constructor arguments for the injection
+* During construction the DI container instantiates the required objects on demand
+* Then it uses its setters or arguments to wire together the dependencies.
+* Which objects are actually used usually on a config file or special construction entity.
+* For example, SPRING framework has a DI container that defines the objects in an XML config file.
+</div></script></section></section><section ><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Scaling
+
+System architecture determines if concerns stay separated when growing
+</div></script></section><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Obsolete EJB
+
+* Consider that an *Entity Bean* for the `Bank` class is  a relational representation (table)
+* First you would define a local (in process) or remote **interface** for clients
+* Then the data from *a bank* would be handled by the Entity Bean
+* This couples the business logic with the bean "container" itself causing:
+	* Forces to subclass container types and provide lifecycle methods
+	* Isolated unit testing is difficult and reusability is virtually impossible
+	* Accounts are relegated to DTO's and one bean can't inherit from another
+
+```java
+// EJB2 Local or Client Interface for a Bank EJB
+package com.example.banking;
+import java.util.Collections;
+import javax.ejb.*;
+public interface BankLocal extends java.ejb.EJBLocalObject {
+	Collection getAccounts() throws EJBException;
+	void setAccounts(Collection accounts) throws EJBException;
+}
+
+// Corresponding Server EJB2 Entity Bean Implementation
+package com.example.banking;
+import java.util.Collections;
+import javax.ejb.*;
+public abstract class Bank implements javax.ejb.EntityBean {
+	public abstract Collection getAccounts();
+	public abstract void setAccounts(Collection accounts);
+
+	// EJB container logic (lifecycle methods)
+	public abstract void setId(Integer id);
+	public abstract Integer getId();
+	public Integer ejbCreate(Integer id) { ... }
+	public void ejbPostCreate(Integer id) { ... }
+	public void setEntityContext(EntityContext ctx) {}
+	public void ejbLoad() {}
+	public void ejbStore() {}
+	public void ejbRemove() {}
+}
+```
+</div></script></section><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Benefits
+
+* Despite their shortcomings Enterprise JavaBeans (Jakarta Beans) provide some benefits
+* Uncoupling of transactional, security and persistence from source into deployment descriptors
+* Note that persistence is a concern that cuts across object boundaries 
+	* You want your objects to persist using the same system (DBMS, flat files, etc)
+	* EJB won't solve how to handle cross-cutting concerns, that is where AOP comes in
+
+> Aspect Oriented Programming restore modularity to architectures with cross-cutting concerns.
+</div></script></section></section><section ><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Java Proxies
+
+* Suitable for simple situations such as wrapping method calls in individual classes
+* However dynamic proxies only work with interfaces.
+* To proxy classes themselves you have to use byte code manipulation<sup id="fnref:1" role="doc-noteref">1</sup>
+* Complex and hard to test they don't offer system wide execution points (needed for AOP)
+
+
+
+<div class="footnotes" role="doc-endnotes">
+<ol>
+<li id="fn:1" role="doc-endnote" class="footnote"><p>
+
+Using tools such as CGLIB, ASM, Javassist
+
+</p></li></ol>
+</div>
+</div></script></section><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+* Define an interface for `Bank` that will be wrapped by the proxy
+* The *Plain-Old-Java-Object* `BankImpl` is the one that handles logic (implementation)
+* The proxy requires an `InvocationHandler` object to implement `Bank` function calls
+* The `BankProxyHandler` uses *reflection* API to map the generic functions to their `BankImpl` 
+* This is a lot of complexity that would be compounded by the use of byte-manipulation
+
+```java
+// Bank Interface (Abstraction)
+import java.utils.*;
+public interface Bank {
+	Collection<Account> getAccounts();
+	void setAccounts(Collection<Account> accounts);
+}
+
+// BankImpl.java (POJO)
+import java.utils.*;
+public class BankImpl implements Bank {
+	private List<Account> accounts;
+	public Collection<Account> getAccounts() {
+		return accounts;
+	}
+	public void setAccounts(Collection<Account> accounts) {
+		this.accounts = new ArrayList<Account>();
+		for (Account account: accounts) {
+			this.accounts.add(account);
+		}
+	}
+}
+
+// BankProxyHandler.java
+import java.lang.reflect.*;
+import java.util.*;
+public class BankProxyHandler implements InvocationHandler {
+	private Bank bank;
+	public BankHandler (Bank bank) {
+		this.bank = bank;
+	}
+	// Method defined in InvocationHandler
+	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+		String methodName = method.getName();
+		if (methodName.equals("getAccounts")) {
+			bank.setAccounts(getAccountsFromDatabase());
+			return bank.getAccounts();
+		} else if (methodName.equals("setAccounts")) {
+			bank.setAccounts((Collection<Account>) args[0]);
+			setAccountsToDatabase(bank.getAccounts());
+			return null;
+		}
+	}
+	protected Collection<Account> getAccountsFromDatabase() { ... }
+	protected void setAccountsToDatabase(Collection<Account> accounts) { ... }
+}
+
+// The client would start the proxy as
+Bank bank = (Bank) Proxy.newProxyInstance(
+	Bank.class.getClassLoader(),
+	new Class[] { Bank.class },
+	new BankProxyHandler(new BankImpl())
+);
+
+```
+</div></script></section></section><section ><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## AOP Frameworks
+
+They handle the proxy boilerplate so that you focus on creating POJO's
+
+* Frameworks like Sprint AOP or JBoss AOP use POJO's without dependencies.
+* Infrastructure<sup id="fnref:1" role="doc-noteref">1</sup>is incorporated using declarative config files or API's.
+* As you specify the library aspects it handles the proxies and byte code needed.
+* At the end you have a DI container that exclusively handles object creation and wiring
+* The client does not invoke objects directly but a set of decorators that extend to the DI
+
+
+
+<div class="footnotes" role="doc-endnotes">
+<ol>
+<li id="fn:1" role="doc-endnote" class="footnote"><p>
+
+Persistence, transactions, security, caching, failover, etc.
+
+</p></li></ol>
+</div>
+</div></script></section><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+Spring 2 Configuration File Example
+
+```xml
+<beans>
+...
+
+<bean id="appDataSource"
+	class="org.apache.commons.dbcp.BasicDataSource"
+	destroy-method="close"
+	p:driverClassName="com.mysql.jdbc.Driver"
+	p:url="jdbc:mysql://localhost:3306/mydb"
+	p:username="me"
+></bean>
+
+<bean id="bankDataAccessObject"
+	class="com.example.banking.persistence.BankDataAccessObject"
+	p:dataSource-ref="appDataSource"
+></bean>
+
+<bean id="bank"
+	class="com.example.banking.model.Bank"
+	p:dataAccessObject-ref="bankDataAccessObject"
+></bean>
+
+...
+</beans>
+```
+
+The `Bank` domain object bean is proxied (wrapped) within a Data Accessor Object (DAO). The DAO is proxied by a Java Database Connectivity (JDBC) data source. Resulting in a *Russian Doll* of decorators.
+</div></script></section><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="mermaid">
+<!-- .element: style="min-width: 30%" -->
+flowchart LR 
+	client --> AppDataSource
+	subgraph AppDataSource
+		subgraph BankDAO 
+			subgraph Bank 
+			end 
+		end 
+	end
+
+</div>
+
+
+* Invoking `getAccount()` on a `Bank` object is interacting with the outermost decorator.
+* The decorators extend the basic behavior of `Bank POJO`
+* At the application level a few lines are used to ask the DI for the top-level objects
+
+```java
+XmlBeanFactory bf = new XmlBeanFactory(new ClassPathResource("app.xml", getClass()));
+Bank bank = (Bank) bf.getBean("bank");
+```
+
+* This are the only lines referencing the Spring framework (no coupling like in EJB).
+* EBJ3 followed in the steps of Aspect Oriented Programming frameworks
+</div></script></section><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+EBJ3 lightweight alternative
+
+```java
+package com.example.banking.model;
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.Collection;
+
+@Entity
+@Table(name = "BANKS")
+public class Bank implements java.io.Serializable {
+	@Id @GeneratedValue(strategy=GenerationType.AUTO)
+	private int id;
+	
+	@Embeddable
+	public class Address {
+		protected String streetAddr1;
+	}
+	
+	@Embedded
+	private Address address;
+	
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy="bank")
+	
+	private Collection<Account> accounts = new ArrayList<Account>();
+		public int getId() {
+		return id;
+	}
+	
+	public void setId(int id) {
+		this.id = id;
+	}
+	
+	public Collection<Account> getAccounts() {
+		return accounts;
+	}
+	
+	public void setAccounts(Collection<Account> accounts) {
+		this.accounts = accounts;
+	}
+}
+```
+</div></script></section></section><section ><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## AspectJ
+
+* One full featured tool dedicated to separating concerns is the AspectJ language
+* This Java extension provides support for **aspects** as modular constructs
+* Adoption of such tools should be weighted against the cost of learning and size of the system
+
+> In conclusion, separating concerns can't be overstated. Your architecture should be itself a component to be tested and improved over time.
+</div></script></section><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Big Design Up Front
+
+* This type of architecture should be avoided unless done with decoupling in mind
+* If the structure separates concerns effectively then a major change is feasible
+* Therefore we can start systems in a simple way adding infrastructure as we scale up
+	* Of course don't start a project without expectations, goals, scope and schedules.
+	* What we want is to maintain the ability to change mayor components at every step
+
+> Many applications added data caching, security and virtualization to their infrastructure easily because they had a minimally coupled designed that are as simple as possible at each level of abstraction.
+</div></script></section></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Optimal System
+
+> Modularized domains of concern, each implemented with POJO's or similar entities. Domains are integrated through minimally invasive Aspects or similar tools. The architecture itself can be test-driven like any other part of the production code.
+</div></script></section><section ><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Decision Making
+
+* Modularity and separation of concerns also allow for decentralized management 
+* In a sufficiently large system no single person can make all the decisions
+
+### Postpone Decisions
+
+* You should postpone decisions until the last reasonable moment
+* This avoids premature decisions made with suboptimal knowledge
+* Premature decisions will be made with less feedback, analysis and experience
+* POJO systems allow for optimal **just-in-time** decisions with recent knowledge
+</div></script></section><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Standards
+
+* Standards are created by experienced people to make decision making simpler
+* Use them as long as there is a tangible benefit and prepare to change them later
+* They are good for the reuse of ideas and components, encapsulation and wiring
+
+> The process of creating standards sometimes is too slow to keep with the industry or they simply lose touch with the real needs of their adopters.
+</div></script></section><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Domain-Specific Languages (DSL)
+
+* Just like standards, DSL's are designed to bridge the gap between a concepts and code
+* They are created usually as extensions of standard languages to serve a specific application
+* They rise the abstraction level above design patterns and into the system tasks themselves
+* Always weight their benefits against the expense of refactoring around them
+
+> Examples include JVM languages such as Kotlin, Scala, Groovy, Clojure, Haxe and Frege.
+</div></script></section></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Final Advice
+
+1. Intent should be clear at every level of abstraction
+2. POJO's and aspects incorporate system wide concerns noninvasively
+3. If you choose to use a particular tool make sure it is the simplest alternative
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+# Emergence
+
+*Conditions for clean code to emerge naturally*
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Rules for Simple Design
+
+Kent Beck's four rules for simple design are a good starting point
+
+1. Run all test, have a good test coverage
+2. Delete all duplication
+3. Express intent
+4. Minimize number of classes and methods
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Run all tests
+
+> Systems must act as intended, therefore we need a testable system. Testable systems push us to create small single purpose entities. Coupling makes testing hard, pushing us to use DI, interfaces and abstractions to decouple and increase cohesion.
+</div></script></section><section ><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Refactor
+
+> Testable systems push us to clean and refactor our code without fear of breaking it. We end up eliminating duplication, ensuring code expressiveness and minimizing the number of classes and methods.
+</div></script></section><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Duplication
+
+* Duplication always means additional work, risk and complexity
+
+```java[8-10,14-16]
+public void scaleToOneDimension(
+	float desiredDimension, float imageDimension) {
+	if (Math.abs(desiredDimension - imageDimension) < errorThreshold)
+		return;
+	float scalingFactor = desiredDimension / imageDimension;
+	scalingFactor = (float)(Math.floor(scalingFactor * 100) * 0.01f);
+	RenderedOp newImage = ImageUtilities.getScaledImage(image, scalingFactor, scalingFactor);
+	image.dispose();
+	System.gc();
+	image = newImage;
+}
+public synchronized void rotate(int degrees) {
+	RenderedOp newImage = ImageUtilities.getRotatedImage(image, degrees);
+	image.dispose();
+	System.gc();
+	image = newImage;
+}
+```
+
+```java[7,10,12-16]
+public void scaleToOneDimension(
+	float desiredDimension, float imageDimension) {
+	if (Math.abs(desiredDimension - imageDimension) < errorThreshold)
+		return;
+	float scalingFactor = desiredDimension / imageDimension;
+	scalingFactor = (float)(Math.floor(scalingFactor * 100) * 0.01f);
+	replaceImage(ImageUtilities.getScaledImage(image, scalingFactor, scalingFactor));
+}
+public synchronized void rotate(int degrees) {
+	replaceImage(ImageUtilities.getRotatedImage(image, degrees));
+}
+private void replaceImage(RenderedOp newImage) {
+	image.dispose();
+	System.gc();
+	image = newImage;
+}
+```
+</div></script></section><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Template Method Pattern
+
+Used to remove high-level abstraction duplication.
+
+* We create subclasses that fill the hole by creating differences in the main template.
+
+```java
+public class VacationPolicy {
+	public void accrueUSDivisionVacation() {
+		calculateBaseVacationHours();
+		legalMinimumsForUS();
+		applyToPayroll();
+	}
+	public void accrueEUDivisionVacation() {
+		calculateBaseVacationHours();
+		legalMinimumsForEU();
+		applyToPayroll();
+	}
+}
+```
+
+```java
+abstract public class VacationPolicy {
+	public void accrueVacation() {
+		calculateBaseVacationHours();
+		alterForLegalMinimums();
+		applyToPayroll();
+	}
+	private void calculateBaseVacationHours() { /* CODE */ };
+	abstract protected void alterForLegalMinimums();
+	private void applyToPayroll() { /* CODE */ };
+}
+
+public class USVacationPolicy extends VacationPolicy {
+	@Override protected void alterForLegalMinimums() {
+		// US specific logic
+	}
+}
+
+public class EUVacationPolicy extends VacationPolicy {
+	@Override protected void alterForLegalMinimums() {
+		// EU specific logic
+	}
+}
+```
+</div></script></section></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Expressive
+
+> Convoluted code may seem easy for us, but code should be expressive enough to communicate our intent to everyone. Code maintenance cost is directly related with how hard is to understand. Use better names, smaller entities, standard nomenclature and unit tests, but the best way to increase expressiveness is to try different alternatives.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Minimize classes and methods
+
+> Even SRP, expressiveness and duplication removal can go to far. When dogmatism such as creating an interface for each class or always separating fields and behavior can result in unnecessary entities. Remember that the objective is clean but also practical code.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+# Concurrency
+
+*Objects abstract processing, threads abstract schedule*
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Advantages
+
+Concurrency is a decoupling strategy, from *what* is done to *when* its done
+
+* In single-threaded applications what and when are practically the same.
+* You can see that in breakpoints, stopping time gives you the state of the system
+* Multi-threaded apps improve throughput and the system structure.
+
+> Consider an information aggregator, if single threaded it needs to finish a request at a time, in a concurrent system it hits all the targets at the same time and simply aggregates the results from the successful hits.
+</div></script></section><section ><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Complexity
+
+* Concurrency improves performance but in systems with a lot of wait time
+* A direct translation from single-thread to concurrent is not possible
+* Concurrent issues are very different from single-threads, hard to debug
+* They need to be double guarded for issues like updates or deadlock
+* They incur in additional code, sometimes introducing unrepeatable bugs
+
+
+> You must weight their benefits carefully, take into account that concurrent systems fail depending on the stress of the system
+</div></script></section><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+```java
+public class X {
+	private int lastIdUsed;
+	public int getNextId() {
+		return ++lastIdUsed;
+	}
+}
+```
+
+* Suppose there is an instance of X with an ID set to 42 and shared with two threads
+* If both of them call `getNextId` there are three possible outcomes:
+	1. X1 gets 43 and X2 gets 44. `lastIdUsed` state is 44
+	2. X1 gets 44 and X2 gets 43. `lastIdUsed` state is 44
+	3. X1 gets 43 and X2 gets 43. `lastIdUsed` state is 43 (Unexpected)
+
+> Single-threat systems have 1 path of execution. In concurrent systems if you change the value of an integer execution can happen through 12,870 paths, most of them arrive at the correct result but not all.
+</div></script></section></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Defense Principles
+
+There are techniques to prevent concurrent issues
+
+1. **Single Responsibility**: Keep concurrent code separate and only doing concurrent tasks
+	1. It has its own life cycle, change, tuning and challenges. Keep those separate
+2. **Encapsulation**: Severely limit the access to any data that may be shared between threads
+	1. Threads updating data cause unexpected behavior, consider using `synchronized`
+	2. Shared data that can get updated is considered a *critical section* that needs protection
+	3. Another alternative is copying the state of the objects into *read-only* object copies
+3. **Independent**: Threads should not talk between them, within reason.
+	1. If possible, partition data into independent subsets operated by independent threads
+
+> Know the protections available to you, Java includes `Concurrent`, `Atomic`, `Locks` and other concurrent classes with built-in protections, thread-safe collections, unrelated task executors and nonblocking solutions.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Terminology
+
+1. **Bound Resources**: Resources of a fixed size or number (database connections)
+2. **Mutual Exclusion**: Only one thread can access shared data or resources at a time
+3. **Starvation**: Threads interference to proceed, this can originate in faster threads
+5. **Deadlock**: Two threads waiting for each other to finish, can originate from shared data
+6. **Livelock**: Causes lockstep from other threads with similar tasks that *are in the way*.
+</div></script></section><section ><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Execution Models
+
+This are some algorithms that commonly emerge in concurrent systems
+
+1. Producer-Consumer
+2. Reader-Writer
+3. Dining Philosophers
+
+Learn their properties and research solutions for their particular challenges
+</div></script></section><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Producer-Consumer
+
+
+<div class="mermaid">
+<!-- .element: style="min-width: 120%" -->
+graph LR
+    A(PRODUCER) --> B[Produce Data]
+    I(CONSUMER) --> J[Consume Data]
+    B --> C{Buffer Full}
+    J --> K{Buffer Empty}
+    C --> |Yes|D[Wait]
+    K --> |Yes|L[Wait]
+    D --> C
+    L --> K
+    C --> |No|E[Write Buffer]
+    K --> |No|M[Read Buffer]
+    E --> H[Shared Queue]
+    E --> F{End}
+    M --> P{End}
+    F --> |Yes|G[End]
+    P --> |Yes|G
+    F --> |No|B
+    P --> |No|J
+    H --> M
+    style H fill:DarkGreen
+
+</div>
+
+
+> The queue is a bound resource with coordination between producers and consumers. The challenge is how long to wait and what types of signals we give to know the state of the queue.
+</div></script></section><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Readers-Writers
+
+
+<div class="mermaid">
+<!-- .element: style="min-width: 100%" -->
+graph LR
+    B[Read Data] --> A(READER)
+    E[Shared Source] --> B
+    A --> F{Data Updating}
+    F --> |Yes|G[Wait]
+    F --> |No|B
+    G --> F
+    C(WRITER) --> D[Write Data]
+    D --> E
+    C --> H{Data Read}
+    H --> |Yes|I[Wait]
+    H --> |No|D
+    I --> H
+    style E fill:DarkGreen
+
+</div>
+
+
+> Here the challenge is to balance the needs of both readers and writers.
+</div></script></section><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Dining Philosophers
+
+
+<div class="mermaid">
+<!-- .element: style="min-width: 100%" -->
+graph LR
+    B[Source] --> |Need A5,A2 to end|A1
+    B --> |Need A1,A3 to end|A2
+    B --> |Need A2,A4 to end|A3
+    B --> |Need A3,A5 to end|A4
+    B --> |Need A4,A1 to end|A5
+    A1 -.-> A2
+    A2 -.-> A3
+    A3 -.-> A4
+    A4 -.-> A5
+    A5 -.-> A1
+    style B fill:DarkGreen
+
+</div>
+
+
+
+> This is a clever problem showing that one thread that holds resources that other thread needs can result in a sequence of threads starving. If the last thread waits for the first one to finish the entire system stops.
+</div></script></section></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Locks
+
+1. Avoid using more than one method on a shared object
+	1. `Synchronized` lock protections only work for one method per shared object
+2. If you **must** use more than one method on a shared object consider
+	1. Client-Based Locking: Client locks the server before calling the first method
+	2. Server-Based Locking: Server creates a method that locks the server
+	3. Adapted Server: Intermediary entity performs the lock on the original server
+
+> Remember that synchronized locks are expensive, they add delays and overhead but they are necessary for critical code sections in concurrent systems
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Shut Down
+
+Concurrent graceful shutdown is hard to get correct
+
+* Deadlock is common, if one child is deadlock the parent waits forever
+* Or if producer and consumer children receive shutdown signals out of order, the producer, blocking the signal to the consumer, may cause the consumer to get stuck, hindering the parent process.
+
+> Write code that shuts down gracefully, it IS harder than it seems.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Testing
+
+1. Failures are NOT one-offs, investigate them for threading problems
+2. Threaded code should be pluggable to run it in multiple configurations and loads
+3. Make threaded code tunable to make it easy to find new configurations
+4. Test on more threads than available processors to locate critical sections
+5. Run on multiple environments and target systems. Each OS has different policies
+6. Jiggle code by instrumenting the threads into different time conditions
+	1. You can use manual `sleep`, `wait`, `yields` and `priorities`
+	2. Ideally you should insert this conditions automatically
+	3. Use AOF, CGLIB or ASM for instrument automation of different conditions
+
+> The point is to "jiggle" the code with different orderings and loads to increase the change of finding errors.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+# Refinement Example
+
+*Case study of a command-line argument parser*
+</div></script></section><section ><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Start
+
+* We parse command-line arguments from time to time
+* Suppose we wanted to create our own utility named `Args`
+* Basic functionality is simple
+	* We construct an `Args` object with the input arguments
+	* We use a format string and then query the instance for the values
+	* Finally we execute the system using the queried values
+
+```java
+public static void main(String[] args) {
+	try {
+	
+		Args arg = new Args("l,p#,d*", args);
+		
+		boolean logging = arg.getBoolean('l');
+		int port = arg.getInt('p');
+		String directory = arg.getString('d');
+		
+		executeApplication(logging, port, directory);
+		
+	} catch (ArgsException e) {
+		System.out.printf("Argument error: %s\n", e.errorMessage());
+	}
+}
+```
+</div></script></section><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Specific Usage
+
+* First parameter of `Args` is the format or schema string
+* It defines three command-line arguments `l,p#,d`
+* The first is a boolean, the second an integer and the third a string
+* The second argument is simply the `main` string array passed down
+* If the constructor does not throw an `ArgsException` then it was parsed
+* The instance is ready to be queried with getter methods
+* A description of what went wrong should be included in the exception
+</div></script></section></section><section ><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Implementation
+
+This is a clean code implementation of the class
+
+```java 
+package com.objectmentor.utilities.args;
+import static com.objectmentor.utilities.args.ArgsException.ErrorCode.*;
+import java.util.*;
+
+public class Args {
+
+	private Map<Character, ArgumentMarshaler> marshalers;
+	private Set<Character> argsFound;
+	private ListIterator<String> currentArgument;
+	
+	public Args(String schema, String[] args) throws ArgsException {
+		marshalers = new HashMap<Character, ArgumentMarshaler>();
+		argsFound = new HashSet<Character>();
+		parseSchema(schema);
+		parseArgumentStrings(Arrays.asList(args));
+	}
+
+	private void parseSchema(String schema) throws ArgsException {
+		for (String element : schema.split(","))
+			if (element.length() > 0)
+				parseSchemaElement(element.trim());
+	}
+
+	private void parseSchemaElement(String element) throws ArgsException {
+		char elementId = element.charAt(0);
+		String elementTail = element.substring(1);
+		validateSchemaElementId(elementId);
+		
+		if (elementTail.length() == 0)
+			marshalers.put(elementId, new BooleanArgumentMarshaler());
+		else if (elementTail.equals("*"))
+			marshalers.put(elementId, new StringArgumentMarshaler());
+		else if (elementTail.equals("#"))
+			marshalers.put(elementId, new IntegerArgumentMarshaler());
+		else if (elementTail.equals("##"))
+			marshalers.put(elementId, new DoubleArgumentMarshaler());
+		else if (elementTail.equals("[*]"))
+			marshalers.put(elementId, new StringArrayArgumentMarshaler());
+		else
+			throw new ArgsException(INVALID_ARGUMENT_FORMAT, elementId, elementTail);
+	}
+
+	private void validateSchemaElementId(char elementId) throws ArgsException {
+		if (!Character.isLetter(elementId))
+			throw new ArgsException(INVALID_ARGUMENT_NAME, elementId, null);
+	}
+	
+	private void parseArgumentStrings(List<String> argsList) throws ArgsException {
+		for (currentArgument = argsList.listIterator(); currentArgument.hasNext();) {
+			String argString = currentArgument.next();
+			if (argString.startsWith("-")) {
+				parseArgumentCharacters(argString.substring(1));
+			} else {
+				currentArgument.previous();
+			break;
+			}
+		}
+	}
+
+	private void parseArgumentCharacters(String argChars) throws ArgsException {
+		for (int i = 0; i < argChars.length(); i++)
+			parseArgumentCharacter(argChars.charAt(i));
+	}
+		
+	private void parseArgumentCharacter(char argChar) throws ArgsException {
+		ArgumentMarshaler m = marshalers.get(argChar);
+		if (m == null) {
+			throw new ArgsException(UNEXPECTED_ARGUMENT, argChar, null);
+		} else {
+			argsFound.add(argChar);
+			try {
+				m.set(currentArgument);
+			} catch (ArgsException e) {
+				e.setErrorArgumentId(argChar);
+			throw e;
+			}
+		}
+	}
+
+	public boolean has(char arg) {
+		return argsFound.contains(arg);
+	}
+	
+	public int nextArgument() {
+		return currentArgument.nextIndex();
+	}
+	
+	public boolean getBoolean(char arg) {
+		return BooleanArgumentMarshaler.getValue(marshalers.get(arg));
+	}
+	
+	public String getString(char arg) {
+		return StringArgumentMarshaler.getValue(marshalers.get(arg));
+	}
+	
+	public int getInt(char arg) {
+		return IntegerArgumentMarshaler.getValue(marshalers.get(arg));
+	}
+	
+	public double getDouble(char arg) {
+		return DoubleArgumentMarshaler.getValue(marshalers.get(arg));
+	}
+	
+	public String[] getStringArray(char arg) {
+		return StringArrayArgumentMarshaler.getValue(marshalers.get(arg));
+	}
+
+}
+```
+</div></script></section><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+1. The definition of the interface `ArgumentMarsheler` should be evident from context. 
+2. This are some of its derivative classes `ArgumentMarshaler`, `BooleanArgumentMarshaler`, `StringArgumentMarshaler`and `IntegerArgumentMarshaler`. The Double and String Array derivatives follow the same structure.
+
+```java
+public interface ArgumentMarshaler {
+	void set(Iterator<String> currentArgument) throws ArgsException;
+}
+```
+
+```java
+public class BooleanArgumentMarshaler implements ArgumentMarshaler {
+
+	private boolean booleanValue = false;
+	
+	public void set(Iterator<String> currentArgument) throws ArgsException {
+		booleanValue = true;
+	}
+	
+	public static boolean getValue(ArgumentMarshaler am) {
+		if (am != null && am instanceof BooleanArgumentMarshaler)
+			return ((BooleanArgumentMarshaler) am).booleanValue;
+		else
+			return false;
+	}
+}
+```
+</div></script></section><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+```java
+import static com.objectmentor.utilities.args.ArgsException.ErrorCode.*;
+
+public class StringArgumentMarshaler implements ArgumentMarshaler {
+
+	private String stringValue = "";
+	
+	public void set(Iterator<String> currentArgument) throws ArgsException {
+		try {
+			stringValue = currentArgument.next();
+		} catch (NoSuchElementException e) {
+			throw new ArgsException(MISSING_STRING);
+		}
+	}
+	
+	public static String getValue(ArgumentMarshaler am) {
+		if (am != null && am instanceof StringArgumentMarshaler)
+			return ((StringArgumentMarshaler) am).stringValue;
+		else
+			return "";
+	}
+}
+```
+
+```java
+import static com.objectmentor.utilities.args.ArgsException.ErrorCode.*;
+
+public class IntegerArgumentMarshaler implements ArgumentMarshaler {
+	private int intValue = 0;
+	
+	public void set(Iterator<String> currentArgument) throws ArgsException {
+		String parameter = null;
+		try {
+			parameter = currentArgument.next();
+			intValue = Integer.parseInt(parameter);
+		} catch (NoSuchElementException e) {
+			throw new ArgsException(MISSING_INTEGER);
+		} catch (NumberFormatException e) {
+			throw new ArgsException(INVALID_INTEGER, parameter);
+		}
+	}
+	
+	public static int getValue(ArgumentMarshaler am) {
+		if (am != null && am instanceof IntegerArgumentMarshaler)
+			return ((IntegerArgumentMarshaler) am).intValue;
+		else
+			return 0;
+	}
+}
+```
+</div></script></section><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+1. One thing that does not follow clean code rules is the use of error codes
+2. We can see how they are implemented in the `ArgsException` class
+
+```java
+import static com.objectmentor.utilities.args.ArgsException.ErrorCode.*;
+
+public class ArgsException extends Exception {
+
+	private char errorArgumentId = '\0';
+	private String errorParameter = null;
+	private ErrorCode errorCode = OK;
+	
+	public ArgsException() {}
+	
+	public ArgsException(String message) {super(message);}
+	
+	public ArgsException(ErrorCode errorCode) {
+		this.errorCode = errorCode;
+	}
+
+	public ArgsException(ErrorCode errorCode, String errorParameter) {
+		this.errorCode = errorCode;
+		this.errorParameter = errorParameter;
+	}
+	
+	public ArgsException(ErrorCode errorCode, char errorArgumentId, String errorParameter) {
+		this.errorCode = errorCode;
+		this.errorParameter = errorParameter;
+		this.errorArgumentId = errorArgumentId;
+	}
+	
+	public char getErrorArgumentId() {
+		return errorArgumentId;
+	}
+	
+	public void setErrorArgumentId(char errorArgumentId) {
+		this.errorArgumentId = errorArgumentId;
+	}
+	
+	public String getErrorParameter() {
+		return errorParameter;
+	}
+	
+	public void setErrorParameter(String errorParameter) {
+		this.errorParameter = errorParameter;
+	}
+	
+	public ErrorCode getErrorCode() {
+		return errorCode;
+	}
+	
+	public void setErrorCode(ErrorCode errorCode) {
+		this.errorCode = errorCode;
+	}
+	
+	public String errorMessage() {
+		switch (errorCode) {
+			case OK:
+				return "TILT: Should not get here.";
+			case UNEXPECTED_ARGUMENT:
+				return String.format("Argument -%c unexpected.", errorArgumentId);
+			case MISSING_STRING:
+				return String.format("Could not find string parameter for -%c.", errorArgumentId);
+			case INVALID_INTEGER:
+				return String.format("Argument -%c expects an integer but was '%s'.", errorArgumentId, errorParameter);
+			case MISSING_INTEGER:
+				return String.format("Could not find integer parameter for -%c.", errorArgumentId);
+			case INVALID_DOUBLE:
+				return String.format("Argument -%c expects a double but was '%s'.", errorArgumentId, errorParameter);
+			case MISSING_DOUBLE:
+				return String.format("Could not find double parameter for -%c.", errorArgumentId);
+			case INVALID_ARGUMENT_NAME:
+				return String.format("'%c' is not a valid argument name.", errorArgumentId);
+			case INVALID_ARGUMENT_FORMAT:
+				return String.format("'%s' is not a valid argument format.", errorParameter);
+		}
+		return "";
+	}
+	
+	public enum ErrorCode {
+		OK, INVALID_ARGUMENT_FORMAT, UNEXPECTED_ARGUMENT, INVALID_ARGUMENT_NAME,
+		MISSING_STRING, MISSING_INTEGER, INVALID_INTEGER, MISSING_DOUBLE, INVALID_DOUBLE
+	}
+}
+```
+</div></script></section><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+1. It should be evident what we need to do to add a new argument type
+	1. New derivative of `ArgumentMarshaler`
+	2. New getter function for the derivative
+	3. New case in `parseSchemaElement`
+	4. New `ArgsException.ErrorCode` message
+
+> This way of structuring code like this IS a process of successive refinement. It didn't happen in a first try, it took many attempts.
+</div></script></section></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## First Working Draft
+
+1. This "works" but its not clean. Even if it was clean at first. (See next slide)
+2. What happened is that I let *functionality* increase without cleanliness in mind.
+3. In short, you should try to redesign the structure as soon as bad code appears.
+
+```java
+import java.text.ParseException;
+import java.util.*;
+
+public class Args {
+	private String schema;
+	private String[] args;
+	private boolean valid = true;
+	private Set<Character> unexpectedArguments = new TreeSet<Character>();
+	private Map<Character, Boolean> booleanArgs =
+	new HashMap<Character, Boolean>();
+	private Map<Character, String> stringArgs = new HashMap<Character, String>();
+	private Map<Character, Integer> intArgs = new HashMap<Character, Integer>();
+	private Set<Character> argsFound = new HashSet<Character>();
+	private int currentArgument;
+	private char errorArgumentId = '\0';
+	private String errorParameter = "TILT";
+	private ErrorCode errorCode = ErrorCode.OK;
+
+	private enum ErrorCode {
+		OK, MISSING_STRING, MISSING_INTEGER, INVALID_INTEGER, UNEXPECTED_ARGUMENT
+	}
+	
+	public Args(String schema, String[] args) throws ParseException {
+		this.schema = schema;
+		this.args = args;
+		valid = parse();
+	}
+	
+	private boolean parse() throws ParseException {
+		if (schema.length() == 0 && args.length == 0)
+			return true;
+		parseSchema();
+		try {
+			parseArguments();
+		} catch (ArgsException e) {}
+		return valid;
+	}
+
+	private boolean parseSchema() throws ParseException {
+		for (String element : schema.split(",")) {
+			if (element.length() > 0) {
+				String trimmedElement = element.trim();
+				parseSchemaElement(trimmedElement);
+			}
+		}
+		return true;
+	}
+
+	private void parseSchemaElement(String element) throws ParseException {
+		char elementId = element.charAt(0);
+		String elementTail = element.substring(1);
+		validateSchemaElementId(elementId);
+		if (isBooleanSchemaElement(elementTail))
+			parseBooleanSchemaElement(elementId);
+		else if (isStringSchemaElement(elementTail))
+			parseStringSchemaElement(elementId);
+		else if (isIntegerSchemaElement(elementTail)) {
+			parseIntegerSchemaElement(elementId);
+		} else {
+			throw new ParseException(String.format("Argument: %c has invalid format: %s.", elementId, elementTail), 0);
+		}
+	}
+
+	private void validateSchemaElementId(char elementId) throws ParseException {
+		if (!Character.isLetter(elementId)) {
+			throw new ParseException("Bad character:" + elementId + "in Args format: " + schema, 0);
+		}
+	}
+	
+	private void parseBooleanSchemaElement(char elementId) {
+		booleanArgs.put(elementId, false);
+	}
+	
+	private void parseIntegerSchemaElement(char elementId) {
+		intArgs.put(elementId, 0);
+	}
+	
+	private void parseStringSchemaElement(char elementId) {
+		stringArgs.put(elementId, "");
+	}
+	
+	private boolean isStringSchemaElement(String elementTail) {
+		return elementTail.equals("*");
+	}
+	
+	private boolean isBooleanSchemaElement(String elementTail) {
+		return elementTail.length() == 0;
+	}
+	
+	private boolean isIntegerSchemaElement(String elementTail) {
+		return elementTail.equals("#");
+	}
+	
+	private boolean parseArguments() throws ArgsException {
+		for (currentArgument = 0; currentArgument < args.length; currentArgument++) {
+			String arg = args[currentArgument];
+			parseArgument(arg);
+		}	
+		return true;
+	}
+
+	private void parseArgument(String arg) throws ArgsException {
+		if (arg.startsWith("-"))
+			parseElements(arg);
+	}
+
+	private void parseElements(String arg) throws ArgsException {
+		for (int i = 1; i < arg.length(); i++)
+			parseElement(arg.charAt(i));
+	}
+
+	private void parseElement(char argChar) throws ArgsException {
+		if (setArgument(argChar))
+			argsFound.add(argChar);
+		else {
+			unexpectedArguments.add(argChar);
+			errorCode = ErrorCode.UNEXPECTED_ARGUMENT;
+			valid = false;
+		}
+	}
+
+	private boolean setArgument(char argChar) throws ArgsException {
+		if (isBooleanArg(argChar))
+			setBooleanArg(argChar, true);
+		else if (isStringArg(argChar))
+			setStringArg(argChar);
+		else if (isIntArg(argChar))
+			setIntArg(argChar);
+		else
+			return false;
+		return true;
+	}
+
+	private boolean isIntArg(char argChar) {return intArgs.containsKey(argChar);}
+
+	private void setIntArg(char argChar) throws ArgsException {
+		currentArgument++;
+		String parameter = null;
+		try {
+			parameter = args[currentArgument];
+			intArgs.put(argChar, new Integer(parameter));
+		} catch (ArrayIndexOutOfBoundsException e) {
+			valid = false;
+			errorArgumentId = argChar;
+			errorCode = ErrorCode.MISSING_INTEGER;
+			throw new ArgsException();
+		} catch (NumberFormatException e) {
+			valid = false;
+			errorArgumentId = argChar;
+			errorParameter = parameter;
+			errorCode = ErrorCode.INVALID_INTEGER;
+			throw new ArgsException();
+		}
+	}
+
+	private void setStringArg(char argChar) throws ArgsException {
+		currentArgument++;
+		try {
+			stringArgs.put(argChar, args[currentArgument]);
+		} catch (ArrayIndexOutOfBoundsException e) {
+			valid = false;
+			errorArgumentId = argChar;
+			errorCode = ErrorCode.MISSING_STRING;
+			throw new ArgsException();
+		}
+	}
+
+	private boolean isStringArg(char argChar) {
+		return stringArgs.containsKey(argChar);
+	}
+
+	private void setBooleanArg(char argChar, boolean value) {
+		booleanArgs.put(argChar, value);
+	}
+
+	private boolean isBooleanArg(char argChar) {
+		return booleanArgs.containsKey(argChar);
+	}
+
+	public int cardinality() {
+		return argsFound.size();
+	}
+
+	public String usage() {
+		if (schema.length() > 0)
+			return "-[" + schema + "]";
+		else
+			return "";
+	}
+
+	public String errorMessage() throws Exception {
+		switch (errorCode) {
+			case OK:
+				throw new Exception("TILT: Should not get here.");
+			case UNEXPECTED_ARGUMENT:
+				return unexpectedArgumentMessage();
+			case MISSING_STRING:
+				return String.format("Could not find string parameter for -%c.", errorArgumentId);
+			case INVALID_INTEGER:
+				return String.format("Argument -%c expects an integer but was '%s'.", errorArgumentId, errorParameter);
+			case MISSING_INTEGER:
+				return String.format("Could not find integer parameter for -%c.", errorArgumentId);
+		}
+		return "";
+	}
+
+	private String unexpectedArgumentMessage() {
+		StringBuffer message = new StringBuffer("Argument(s) -");
+		for (char c : unexpectedArguments) {
+			message.append(c);
+		}
+		message.append(" unexpected.");
+		return message.toString();
+	}
+
+	private boolean falseIfNull(Boolean b) {
+		return b != null && b;
+	}
+
+	private int zeroIfNull(Integer i) {
+		return i == null ? 0 : i;
+	}
+
+	private String blankIfNull(String s) {
+		return s == null ? "" : s;
+	}
+
+	public String getString(char arg) {
+		return blankIfNull(stringArgs.get(arg));
+	}
+
+	public int getInt(char arg) {
+		return zeroIfNull(intArgs.get(arg));
+	}
+
+	public boolean getBoolean(char arg) {
+		return falseIfNull(booleanArgs.get(arg));
+	}
+
+	public boolean has(char arg) {
+		return argsFound.contains(arg);
+	}
+
+	public boolean isValid() {
+		return valid;
+	}
+
+	private class ArgsException extends Exception {}
+}
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Earlier Draft (Boolean Only)
+
+```java
+package com.objectmentor.utilities.getopts;
+import java.util.*;
+
+public class Args {
+
+	private String schema;
+	private String[] args;
+	private boolean valid;
+	private Set<Character> unexpectedArguments = new TreeSet<Character>();
+	private Map<Character, Boolean> booleanArgs =
+	new HashMap<Character, Boolean>();
+	private int numberOfArguments = 0;
+
+	public Args(String schema, String[] args) {
+		this.schema = schema;
+		this.args = args;
+		valid = parse();
+	}
+	
+	public boolean isValid() {
+		return valid;
+	}
+
+	private boolean parse() {
+		if (schema.length() == 0 && args.length == 0)
+			return true;
+		parseSchema();
+		parseArguments();
+		return unexpectedArguments.size() == 0;
+	}
+
+	private boolean parseSchema() {
+		for (String element : schema.split(",")) {
+			parseSchemaElement(element);
+		}
+		return true;
+	}
+
+	private void parseSchemaElement(String element) {
+		if (element.length() == 1) {
+			parseBooleanSchemaElement(element);
+		}
+	}
+
+	private void parseBooleanSchemaElement(String element) {
+		char c = element.charAt(0);
+		if (Character.isLetter(c)) {
+			booleanArgs.put(c, false);
+		}
+	}
+
+	private boolean parseArguments() {
+		for (String arg : args)
+			parseArgument(arg);
+		return true;
+	}
+
+	private void parseArgument(String arg) {
+		if (arg.startsWith("-"))
+			parseElements(arg);
+	}
+
+	private void parseElements(String arg) {
+		for (int i = 1; i < arg.length(); i++)
+			parseElement(arg.charAt(i));
+	}
+
+	private void parseElement(char argChar) {
+		if (isBoolean(argChar)) {
+			numberOfArguments++;
+			setBooleanArg(argChar, true);
+		} else
+			unexpectedArguments.add(argChar);
+	}
+
+	private void setBooleanArg(char argChar, boolean value) {
+		booleanArgs.put(argChar, value);
+	}
+
+	private boolean isBoolean(char argChar) {
+		return booleanArgs.containsKey(argChar);
+	}
+
+	public int cardinality() {
+		return numberOfArguments;
+	}
+
+	public String usage() {
+		if (schema.length() > 0)
+			return "-["+schema+"]";
+		else
+			return "";
+	}
+
+	public String errorMessage() {
+		if (unexpectedArguments.size() > 0) {
+			return unexpectedArgumentMessage();
+		} else
+			return "";
+	}
+
+	private String unexpectedArgumentMessage() {
+		StringBuffer message = new StringBuffer("Argument(s) -");
+		for (char c : unexpectedArguments) {
+			message.append(c);
+		}
+			message.append(" unexpected.");
+			return message.toString();
+	}
+
+	public boolean getBoolean(char arg) {
+		return booleanArgs.get(arg);
+	}
+}
+```
+
+* To stop this form getting into the previous mess you should refactor soon
+* And to refactor you should do it in a Test Driven way. I created JUnit tests
+
+> You should not be asking "How I can code this feature", instead ask "How can I code a structure that makes adding features pleasant".
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## ArgsTest
+
+```java
+package com.objectmentor.utilities.args;
+import junit.framework.TestCase;
+
+public class ArgsTest extends TestCase {
+
+	public void testCreateWithNoSchemaOrArguments() throws Exception {
+		Args args = new Args("", new String[0]);
+		assertEquals(0, args.cardinality());
+	}
+
+	public void testWithNoSchemaButWithOneArgument() throws Exception {
+		try {
+			new Args("", new String[]{"-x"});
+			fail();
+		} catch (ArgsException e) {
+			assertEquals(ArgsException.ErrorCode.UNEXPECTED_ARGUMENT,
+			e.getErrorCode());
+			assertEquals('x', e.getErrorArgumentId());
+		}
+	}
+
+	public void testWithNoSchemaButWithMultipleArguments() throws Exception {
+		try {
+			new Args("", new String[]{"-x", "-y"});
+		fail();
+		} catch (ArgsException e) {
+			assertEquals(ArgsException.ErrorCode.UNEXPECTED_ARGUMENT,
+			e.getErrorCode());
+			assertEquals('x', e.getErrorArgumentId());
+		}
+	}
+
+	public void testNonLetterSchema() throws Exception {
+		try {
+			new Args("*", new String[]{});
+			fail("Args constructor should have thrown exception");
+		} catch (ArgsException e) {
+			assertEquals(ArgsException.ErrorCode.INVALID_ARGUMENT_NAME,
+			e.getErrorCode());
+			assertEquals('*', e.getErrorArgumentId());
+		}
+	}
+
+	public void testInvalidArgumentFormat() throws Exception {
+		try {
+			new Args("f~", new String[]{});
+			fail("Args constructor should have throws exception");
+		} catch (ArgsException e) {
+			assertEquals(ArgsException.ErrorCode.INVALID_FORMAT, e.getErrorCode());
+			assertEquals('f', e.getErrorArgumentId());
+		}
+	}
+
+	public void testSimpleBooleanPresent() throws Exception {
+		Args args = new Args("x", new String[]{"-x"});
+		assertEquals(1, args.cardinality());
+		assertEquals(true, args.getBoolean('x'));
+	}
+
+	public void testSimpleStringPresent() throws Exception {
+		Args args = new Args("x*", new String[]{"-x", "param"});
+		assertEquals(1, args.cardinality());
+		assertTrue(args.has('x'));
+		assertEquals("param", args.getString('x'));
+	}
+
+	public void testMissingStringArgument() throws Exception {
+		try {
+			new Args("x*", new String[]{"-x"});
+			fail();
+		} catch (ArgsException e) {
+			assertEquals(ArgsException.ErrorCode.MISSING_STRING, e.getErrorCode());
+			assertEquals('x', e.getErrorArgumentId());
+		}
+	}
+
+	public void testSpacesInFormat() throws Exception {
+		Args args = new Args("x, y", new String[]{"-xy"});
+		assertEquals(2, args.cardinality());
+		assertTrue(args.has('x'));
+		assertTrue(args.has('y'));
+	}
+
+	public void testSimpleIntPresent() throws Exception {
+		Args args = new Args("x#", new String[]{"-x", "42"});
+		assertEquals(1, args.cardinality());
+		assertTrue(args.has('x'));
+		assertEquals(42, args.getInt('x'));
+	}
+
+	public void testInvalidInteger() throws Exception {
+		try {
+			new Args("x#", new String[]{"-x", "Forty two"});
+			fail();
+		} catch (ArgsException e) {
+			assertEquals(ArgsException.ErrorCode.INVALID_INTEGER, e.getErrorCode());
+			assertEquals('x', e.getErrorArgumentId());
+			assertEquals("Forty two", e.getErrorParameter());
+		}
+	}
+
+	public void testMissingInteger() throws Exception {
+		try {
+			new Args("x#", new String[]{"-x"});
+			fail();
+		} catch (ArgsException e) {
+			assertEquals(ArgsException.ErrorCode.MISSING_INTEGER, e.getErrorCode());
+			assertEquals('x', e.getErrorArgumentId());
+		}
+	}
+
+	public void testSimpleDoublePresent() throws Exception {
+		Args args = new Args("x##", new String[]{"-x", "42.3"});
+		assertEquals(1, args.cardinality());
+		assertTrue(args.has('x'));
+		assertEquals(42.3, args.getDouble('x'), .001);
+	}
+
+	public void testInvalidDouble() throws Exception {
+		try {
+			new Args("x##", new String[]{"-x", "Forty two"});
+			fail();
+		} catch (ArgsException e) {
+			assertEquals(ArgsException.ErrorCode.INVALID_DOUBLE, e.getErrorCode());
+			assertEquals('x', e.getErrorArgumentId());
+			assertEquals("Forty two", e.getErrorParameter());
+		}
+	}
+
+	public void testMissingDouble() throws Exception {
+		try {
+			new Args("x##", new String[]{"-x"});
+			fail();
+		} catch (ArgsException e) {
+			assertEquals(ArgsException.ErrorCode.MISSING_DOUBLE, e.getErrorCode());
+			assertEquals('x', e.getErrorArgumentId());
+		}
+	}
+}
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## ArgsExceptionTest
+
+```java
+public class ArgsExceptionTest extends TestCase {
+	public void testUnexpectedMessage() throws Exception {
+		ArgsException e =new ArgsException(ArgsException.ErrorCode.UNEXPECTED_ARGUMENT, 'x', null);
+		assertEquals("Argument -x unexpected.", e.errorMessage());
+	}
+	
+	public void testMissingStringMessage() throws Exception {
+		ArgsException e = new ArgsException(ArgsException.ErrorCode.MISSING_STRING, 'x', null);
+		assertEquals("Could not find string parameter for -x.", e.errorMessage());
+	}
+
+	public void testInvalidIntegerMessage() throws Exception {
+		ArgsException e = new ArgsException(ArgsException.ErrorCode.INVALID_INTEGER, 'x', "Forty two");
+		assertEquals("Argument -x expects an integer but was 'Forty two'.",
+		e.errorMessage());
+	}
+
+	public void testMissingIntegerMessage() throws Exception {
+		ArgsException e = new ArgsException(ArgsException.ErrorCode.MISSING_INTEGER, 'x', null);
+		assertEquals("Could not find integer parameter for -x.", e.errorMessage());
+	}
+
+	public void testInvalidDoubleMessage() throws Exception {
+		ArgsException e = new ArgsException(ArgsException.ErrorCode.INVALID_DOUBLE, 'x', "Forty two");
+		assertEquals("Argument -x expects a double but was 'Forty two'.",
+		e.errorMessage());
+	}
+
+	public void testMissingDoubleMessage() throws Exception {
+		ArgsException e = new ArgsException(ArgsException.ErrorCode.MISSING_DOUBLE, 'x', null);
+		assertEquals("Could not find double parameter for -x.", e.errorMessage());
+	}
+}
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+# Smells and Heuristics
+
+*List of things that feel bad when reading and writing code*
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Names
+
+1. **Descriptive**: Make sure a name is descriptive, they make code *readable*.
+2. **Abstraction**: Pick names that communicate the appropriate level of abstraction.
+3. **Standard Nomenclature**: Use industry, language, business and project conventions.
+4. **Unambiguous**: Choose names that can be interpreted in only one way.
+5. **Scope**: Name meaning should be evident from the context of their scope.
+6. **Encodings**: Avoid encodings, prefixes, suffixes or any other clutter.
+7. **Side Effects**: Names should describe everything they do, don't hide side effects.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Functions
+
+1. **Many Arguments**: Functions should have no arguments or very few.
+2. **Output Arguments**: Arguments should be inputs not outputs.
+3. **Flag Arguments**: Boolean arguments declare the method is doing too much.
+4. **Dead Function**: Functions that are never used should be discarded.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Comments
+
+1. **Inappropriate Info**: Use your source control for meta-data. Keep comments about code.
+2. **Obsolete**: Old, irrelevant, incorrect. Update or delete irrelevant comments.
+3. **Redundant**: Comments should not state what is evident from the code itself.
+4. **Poorly Written**: Take you time, use the best words. Grammar, punctuation. Be brief.
+5. **Commented-Out Code**:  Code that rots, obsolete pollution. Don't leave it behind.
+</div></script></section><section  data-markdown><script type="text/template"></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Tests
+
+1. **Insufficient**: Test should test everything that could possibly break.
+2. **Coverage Tool**: This tools report gaps in the testing strategy. Use them.
+3. **Trivial Tests**: The cost of writing them is worth the documentation value.
+4. **Ignored Tests**:  Use them when there is ambiguity about the requirements.
+5. **Boundary**: Take care to test boundary conditions, don't underestimate them.
+6. **Near Bugs**: Bugs tend to be near each other. Search for other bugs near one.
+7. **Patterns of Failure**:  The way tests fail may give hints about failures in structure.
+8. **Coverage Patterns**: Code that is not tested or executed often may offer hints.
+9. **Fast**: A slow test is probably a test that won't get run. Try to keep them fast.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Java
+
+1. **Wildcards**: Use them to avoid log import lists. Import only when duplicates exists.
+2. **Inherit Constants**: Don't pass down your constants, use static imports instead.
+3. **Constants and Enums**: Use them instead of static final ints.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Environment
+
+1. **Many Steps**: Building a project should be a trivial one or two command process.
+2. **Testing**: Testing should be a simple one command process.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## General P1
+
+1. **Multiple Languages**: Source files should contain one or mix very few languages.
+2. **Expected Behavior**: A class or function should implement what you expect it to do.
+3. **Boundaries**: Every boundary, corner case, quirk and exception should be accounted for.
+4. **Overridden Safeties**: Each safety measure you disable is risky, it is there for a reason.
+5. **Duplication**: Virtually every programmer knows that duplication is bad (DRY principle).
+6. **Abstraction**: Code should limit to doing things to their appropriate abstraction level.
+7. **Derivatives** In general base classes shouldn't interact with their derivatives.
+8. **Exposure**: Classes should have small interfaces. Encapsulate as much as you can.
+9. **Dead Code**: Code that isn't executed, like checking conditions that never happen.
+
+> An exception to the derivatives rule is base classes that have a fix number of derivatives and implement code to select between them.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## General P2
+
+10. **Vertical Separation**: Group variables and functions as they are being used.
+11. **Inconsistency**: If you do something in a certain way we expect this elsewhere.
+12. **Clutter**: No implementation, functions never called, variables that aren't used.
+13. **Artificial Coupling**: Putting something in a *convenient* but unrelated location.
+14. **Feature Envy**: Classes that use variables and functions from other classes.
+15. **Selector Args**: They are a lazy way of avoiding splitting a large function.
+16. **Obscured Intent**: Readers should look at the code and know what it does.
+17. **Misplaced Responsibility**: Code should *contain* the code we expect.
+18. **Static Code**: We miss opportunities for code that *wants* to be polymorphic.
+
+
+> Feature envy means that a class that envies the implementation of other class and uses its behavior in a copy and paste way.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## General P3
+
+19. **Explanatory Vars**: Improve readability by using intermediary variables.
+20. **Function Behavior**: Function names should say what the function actually does.
+21. **Algorithm**: Actually understand the algorithm being used. Is it the best choice?
+22. **Logical Dependencies**: Modules should state explicitly the data they need.
+23. **Polymorphism**: Polymorphism will always be better than nested selectors.
+24. **Standard Conventions**: A code base should be consistent with its styling rules.
+25. **Named Constants**: Use them instead of magic numbers.
+26. **Precision**: Coding decisions should have alternatives and reasons behind them.
+27. **Structure**: Design decisions should prefer structure over conventions.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## General P4
+
+28. **Encapsulate Conditionals**: Boolean logic is hard, try to name them in a method.
+29. **Negative Conditionals**: Avoid negatives since they are non-intuitive.
+30. **Do One Thing**: Functions should do one and only one thing.
+31. **Temporal Coupling**: Function call ordering is inevitable, try to make it obvious.
+32. **Arbitrary**: Well structured code invites to repeat the structure in the code base.
+33. **Encapsulate Boundaries**: Separate special conditions into well named variables.
+34. **Function Abstraction**: Functions should only descend one level of abstraction.
+35. **Config Data**: Global or configuration variables should be visible at high levels.
+36. **Transitive Nav**: Modules should only know about other modules they work with.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1500px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+1. Design Patterns: Elements of Reusable Object Oriented Software
+2. Agile Software Development: Principles, Patterns, and Practices
+3. Literate Programming
+4. The Pragmatic Programmer
+4. Refactoring: Improving the Design of Existing Code
+4. Test Driven Development
+4. Working Effectively with Legacy Code
+5. Implementation Patterns
+6. The Elements of Programming Style
+7. Structured Programming
+8. Object Design
+9. A Timeless Way of Building
+11. Extreme Programming Explained: Embrace Change
+12. Concurrent Programming in Java
+13. Hardcore Java
+14. Smalltalk Best Practice Patterns
+15. Domain Driven Design
+</div></script></section></div>
+    </div>
+
+    <script src="dist/reveal.js"></script>
+
+    <script src="plugin/markdown/markdown.js"></script>
+    <script src="plugin/highlight/highlight.js"></script>
+    <script src="plugin/zoom/zoom.js"></script>
+    <script src="plugin/notes/notes.js"></script>
+    <script src="plugin/math/math.js"></script>
+	<script src="plugin/mermaid/mermaid.js"></script>
+	<script src="plugin/chart/chart.min.js"></script>
+	<script src="plugin/chart/plugin.js"></script>
+	<script src="plugin/menu/menu.js"></script>
+	<script src="plugin/customcontrols/plugin.js"></script>
+
+    <script>
+      function extend() {
+        var target = {};
+        for (var i = 0; i < arguments.length; i++) {
+          var source = arguments[i];
+          for (var key in source) {
+            if (source.hasOwnProperty(key)) {
+              target[key] = source[key];
+            }
+          }
+        }
+        return target;
+      }
+
+	  function isLight(color) {
+		let hex = color.replace('#', '');
+
+		// convert #fff => #ffffff
+		if(hex.length == 3){
+			hex = `${hex[0]}${hex[0]}${hex[1]}${hex[1]}${hex[2]}${hex[2]}`;
+		}
+
+		const c_r = parseInt(hex.substr(0, 2), 16);
+		const c_g = parseInt(hex.substr(2, 2), 16);
+		const c_b = parseInt(hex.substr(4, 2), 16);
+		const brightness = ((c_r * 299) + (c_g * 587) + (c_b * 114)) / 1000;
+		return brightness > 155;
+	}
+
+	var bgColor = getComputedStyle(document.documentElement).getPropertyValue('--r-background-color').trim();
+	var isLight = isLight(bgColor);
+
+	if(isLight){
+		document.body.classList.add('has-light-background');
+	} else {
+		document.body.classList.add('has-dark-background');
+	}
+
+      // default options to init reveal.js
+      var defaultOptions = {
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+        transition: 'default', // none/fade/slide/convex/concave/zoom
+        plugins: [
+          RevealMarkdown,
+          RevealHighlight,
+          RevealZoom,
+          RevealNotes,
+          RevealMath.MathJax3,
+		  RevealMermaid,
+		  RevealChart,
+		  RevealCustomControls,
+		  RevealMenu,
+        ],
+
+
+    	allottedTime: 120 * 1000,
+
+		mathjax3: {
+			mathjax: 'plugin/math/mathjax/tex-mml-chtml.js',
+		},
+		markdown: {
+		  gfm: true,
+		  mangle: true,
+		  pedantic: false,
+		  smartLists: false,
+		  smartypants: false,
+		},
+
+		mermaid: {
+			theme: isLight ? 'default' : 'dark',
+		},
+
+		customcontrols: {
+			controls: [
+				{id: 'toggle-overview',
+				title: 'Toggle overview (O)',
+				icon: '<i class="fa fa-th"></i>',
+				action: 'Reveal.toggleOverview();'
+				},
+			]
+		},
+		menu: {
+			loadIcons: false
+		}
+      };
+
+      // options from URL query string
+      var queryOptions = Reveal().getQueryHash() || {};
+
+      var options = extend(defaultOptions, {"width":"1500","height":"1200","margin":0.04,"controls":true,"progress":true,"slideNumber":true,"transition":"slide","transitionSpeed":"default"}, queryOptions);
+    </script>
+
+    <script>
+      Reveal.initialize(options);
+    </script>
+  </body>
+
+  <!-- created with Advanced Slides -->
+</html>
